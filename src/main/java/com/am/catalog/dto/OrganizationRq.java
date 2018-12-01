@@ -1,42 +1,39 @@
-package com.am.catalog.model;
+package com.am.catalog.dto;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Column;
-import java.io.Serializable;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
-@Entity
-public class Organization implements Serializable {
+public class OrganizationRq {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "org_name")
+    @Size(max = 50)
+    @NotEmpty(message = "Name cannot be empty")
     private String name;
 
+    @Size(max = 50)
+    @NotBlank(message = "Full name cannot be empty")
     @Column(name = "full_name")
     private String fullName;
 
+    @Size(max = 10, min = 10)
+    @NotBlank(message = "INN cannot be empty")
     private String inn;
 
+    @Size(max = 9, min = 9)
+    @NotBlank(message = "KPP cannot be empty")
     private String kpp;
 
+    @Size(max = 100)
+    @NotBlank(message = "Address cannot be empty")
     private String address;
 
+    @Size(max = 20)
     private String phone;
 
-    @Column(name = "is_active")
     private Boolean isActive;
-
-    public Organization() {
-    }
-
-    public Organization(Long id) {
-        this.id = id;
-    }
 
     public Long getId() {
         return id;
@@ -101,5 +98,4 @@ public class Organization implements Serializable {
     public void setActive(Boolean active) {
         isActive = active;
     }
-
 }

@@ -1,23 +1,18 @@
 package com.am.catalog.service;
 
+import com.am.catalog.dto.OrganizationRs;
 import com.am.catalog.model.Organization;
-import com.am.catalog.view.OrganizationView;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestParam;
+import com.am.catalog.dto.OrganizationRq;
 
-import javax.validation.Valid;
 import java.util.List;
 
-@Validated
+
 public interface OrganizationService {
-    ResponseEntity<String> save(@Valid OrganizationView organizationView);
+    String saveOrg(OrganizationRq organizationRq);
 
-    ResponseEntity<String> update(@Valid OrganizationView organizationView);
+    String updateOrg(OrganizationRq organizationRq);
 
-    ResponseEntity<Organization> idOrg(Long id);
+    Organization findOrgById(Long id);
 
-    ResponseEntity<List<Organization>> listOrg(String name,
-                                               @RequestParam(required = false) String inn,
-                                               @RequestParam(required = false) Boolean isActive);
+    List<OrganizationRs> getOrgList(String name, String inn, Boolean isActive);
 }
