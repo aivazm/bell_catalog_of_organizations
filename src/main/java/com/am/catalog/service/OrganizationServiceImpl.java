@@ -1,6 +1,7 @@
 package com.am.catalog.service;
 
-import com.am.catalog.dao.organization.OrganizationDao;
+import com.am.catalog.dao.OrganizationDao;
+import com.am.catalog.dto.CrudOperationRs;
 import com.am.catalog.dto.OrganizationRq;
 import com.am.catalog.dto.OrganizationRs;
 import com.am.catalog.model.Organization;
@@ -8,11 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Service
-
 public class OrganizationServiceImpl implements OrganizationService {
 
     private final OrganizationDao dao;
@@ -24,7 +23,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @Transactional
-    public String saveOrg(OrganizationRq OrgRq) {
+    public CrudOperationRs saveOrg(OrganizationRq OrgRq) {
         Organization organization = new Organization();
         organization.setName(OrgRq.getName());
         organization.setFullName(OrgRq.getFullName());
@@ -39,13 +38,19 @@ public class OrganizationServiceImpl implements OrganizationService {
         } else {
             organization.setActive(false);
         }
-        String message = dao.saveOrg(organization);
-        return message;
+        Organization orgSaved = dao.saveOrg(organization);
+        CrudOperationRs rs = new CrudOperationRs();
+        if (orgSaved != null) {
+            rs.setData("Success");
+        } else {
+            rs.setError("Объект не сохранен");
+        }
+        return rs;
     }
 
     @Override
     @Transactional
-    public String updateOrg(OrganizationRq OrgRq) {
+    public CrudOperationRs updateOrg(OrganizationRq OrgRq) {
         Organization organization = new Organization();
         organization.setId(OrgRq.getId());
         organization.setName(OrgRq.getName());
@@ -61,8 +66,14 @@ public class OrganizationServiceImpl implements OrganizationService {
         } else {
             organization.setActive(false);
         }
-        String message = dao.updateOrg(organization);
-        return message;
+        Organization orgUpdated = dao.updateOrg(organization);
+        CrudOperationRs rs = new CrudOperationRs();
+        if (orgUpdated != null) {
+            rs.setData("Success");
+        } else {
+            rs.setError("Объект не обновлен");
+        }
+        return rs;
     }
 
     @Override

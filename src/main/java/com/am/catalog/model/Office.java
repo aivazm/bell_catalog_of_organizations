@@ -1,24 +1,16 @@
 package com.am.catalog.model;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
-public class Organization implements Serializable {
+public class Office {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "org_name")
+    @Column(name = "off_name")
     private String name;
-
-    @Column(name = "full_name")
-    private String fullName;
-
-    private String inn;
-
-    private String kpp;
 
     private String address;
 
@@ -27,10 +19,14 @@ public class Organization implements Serializable {
     @Column(name = "is_active")
     private Boolean isActive;
 
-    public Organization() {
+    @ManyToOne
+    @JoinColumn(name = "org_id")
+    private Organization organization;
+
+    public Office() {
     }
 
-    public Organization(Long id) {
+    public Office(Long id) {
         this.id = id;
     }
 
@@ -48,30 +44,6 @@ public class Organization implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getInn() {
-        return inn;
-    }
-
-    public void setInn(String inn) {
-        this.inn = inn;
-    }
-
-    public String getKpp() {
-        return kpp;
-    }
-
-    public void setKpp(String kpp) {
-        this.kpp = kpp;
     }
 
     public String getAddress() {
@@ -98,4 +70,11 @@ public class Organization implements Serializable {
         isActive = active;
     }
 
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
 }

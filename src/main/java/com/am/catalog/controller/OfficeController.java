@@ -1,11 +1,10 @@
 package com.am.catalog.controller;
 
 import com.am.catalog.dto.CrudOperationRs;
-import com.am.catalog.dto.OrganizationRq;
-import com.am.catalog.dto.OrganizationRs;
+import com.am.catalog.dto.OfficeRq;
+import com.am.catalog.dto.OfficeRs;
 import com.am.catalog.exception.EmptyFieldException;
-import com.am.catalog.model.Organization;
-import com.am.catalog.service.OrganizationService;
+import com.am.catalog.service.OfficeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,28 +18,24 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(value = "/organization", produces = APPLICATION_JSON_VALUE)
-public class OrganizationController {
+@RequestMapping(value = "/office", produces = APPLICATION_JSON_VALUE)
+public class OfficeController {
 
-    private final OrganizationService organizationService;
+    private final OfficeService officeService;
 
     @Autowired
-    public OrganizationController(OrganizationService organizationService) {
-        this.organizationService = organizationService;
+    public OfficeController(OfficeService officeService) {
+        this.officeService = officeService;
     }
-
-    @GetMapping("{id}")
-    public ResponseEntity<Organization> idOrg(@PathVariable Long id) {
-        Organization organization = organizationService.findOrgById(id);
-        return new ResponseEntity<>(organization, HttpStatus.OK);
-    }
-
 
     @PostMapping("/save")
-    public ResponseEntity<CrudOperationRs> saveOrg(@RequestBody @Valid OrganizationRq organizationRq,
+    public ResponseEntity<CrudOperationRs> saveOff(@RequestBody @Valid OfficeRq officeRq,
                                                    BindingResult bindingResult
     ) {
         StringBuilder message = new StringBuilder();
+        if (officeRq.getOrgId() == null) {
+            message.append("OrgId cannot be empty | ");
+        }
         if (bindingResult.hasErrors()) {
             List<FieldError> errors = bindingResult.getFieldErrors();
             for (FieldError error : errors) {
@@ -48,7 +43,7 @@ public class OrganizationController {
             }
             throw new EmptyFieldException(message.toString().trim());
         } else {
-            CrudOperationRs crudOperationRs = organizationService.saveOrg(organizationRq);
+            CrudOperationRs crudOperationRs = officeService.saveOff(officeRq);
             if (crudOperationRs.getData().isEmpty()) {
                 return new ResponseEntity<>(crudOperationRs, HttpStatus.BAD_REQUEST);
             } else {
@@ -58,11 +53,11 @@ public class OrganizationController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<CrudOperationRs> updateOrg(@RequestBody @Valid OrganizationRq organizationRq,
+    public ResponseEntity<CrudOperationRs> updateOrg(@RequestBody @Valid OfficeRq officeRq,
                                                      BindingResult bindingResult
     ) {
         StringBuilder message = new StringBuilder();
-        if (organizationRq.getId() == null) {
+        if (officeRq.getId() == null) {
             message.append("id cannot be empty | ");
         }
         if (bindingResult.hasErrors()) {
@@ -74,7 +69,7 @@ public class OrganizationController {
         if (message.length() != 0) {
             throw new EmptyFieldException(message.toString());
         } else {
-            CrudOperationRs crudOperationRs = organizationService.updateOrg(organizationRq);
+            CrudOperationRs crudOperationRs = officeService.updateOff(officeRq);
             if (crudOperationRs.getData().isEmpty()) {
                 return new ResponseEntity<>(crudOperationRs, HttpStatus.BAD_REQUEST);
             } else {
@@ -83,17 +78,25 @@ public class OrganizationController {
         }
     }
 
-
-    @PostMapping(value = "/list")
-    public ResponseEntity<List<OrganizationRs>> listOrg(String name,
-                                                        @RequestParam(required = false) String inn,
-                                                        @RequestParam(required = false) Boolean isActive
+    @PostMapping(value = "/list/{orgId}")
+    public ResponseEntity<List<OfficeRs>> listOff(@PathVariable Long orgId,
+                                                  @RequestParam(required = false) String name,
+                                                  @RequestParam(required = false) String phone,
+                                                  @RequestParam(required = false) Boolean isActive
     ) {
-        if (name == null || name.equals("")) {
-            throw new EmptyFieldException("Name cannot be empty");
+        if (orgId == null || orgId < 1) {
+            throw new EmptyFieldException("OrgId cannot be empty or less than one");
         }
-        List<OrganizationRs> listOrgRs = organizationService.getOrgList(name, inn, isActive);
-        return new ResponseEntity<>(listOrgRs, HttpStatus.OK);
+        List<OfficeRs> listOffRs = officeService.getOffList(orgId, name, phone, isActive);
+        return new ResponseEntity<>(listOffRs, HttpStatus.OK);
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<OfficeRs> idOrg(@PathVariable Long id) {
+        if (id < 1) {
+            throw new EmptyFieldException("Id cannot be empty or less than one");
+        }
+        OfficeRs officeRs = officeService.findOffById(id);
+        return new ResponseEntity<>(officeRs, HttpStatus.OK);
+    }
 }

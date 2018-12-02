@@ -2,7 +2,7 @@ package com.am.catalog.controller;
 
 import com.am.catalog.dto.CrudOperationRs;
 import com.am.catalog.exception.EmptyFieldException;
-import com.am.catalog.exception.NoOrganizationException;
+import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.exception.NotUniqueException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +27,8 @@ public class ExceptionHandlerController {
     }
 
 
-    @ExceptionHandler(NoOrganizationException.class)
-    public ResponseEntity<CrudOperationRs> noOrganizationException(NoOrganizationException ex) {
+    @ExceptionHandler(NoObjectException.class)
+    public ResponseEntity<CrudOperationRs> noOrganizationException(NoObjectException ex) {
         CrudOperationRs crudOperationRs = new CrudOperationRs();
         crudOperationRs.setError(ex.getMessage());
         return new ResponseEntity<>(crudOperationRs, HttpStatus.BAD_REQUEST);

@@ -1,7 +1,7 @@
-package com.am.catalog.dao.organization;
+package com.am.catalog.dao;
 
 import com.am.catalog.dto.OrganizationRs;
-import com.am.catalog.exception.NoOrganizationException;
+import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.exception.NotUniqueException;
 import com.am.catalog.model.Organization;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,21 +25,21 @@ public class OrganizationDaoImpl implements OrganizationDao {
     }
 
     @Override
-    public String saveOrg(Organization org) {
-        final String FIND_BY_ID_QUERY = "SELECT o FROM Organization o WHERE o.inn = :inn";
-        TypedQuery<Organization> query = em.createQuery(FIND_BY_ID_QUERY, Organization.class);
+    public Organization saveOrg(Organization org) {
+        final String FIND_BY_INN_QUERY = "SELECT o FROM Organization o WHERE o.inn = :inn";
+        TypedQuery<Organization> query = em.createQuery(FIND_BY_INN_QUERY, Organization.class);
         query.setParameter("inn", org.getInn());
         List<Organization> orgList = query.getResultList();
         if (!orgList.isEmpty()) {
             throw new NotUniqueException("Организация с ИНН " + org.getInn() + " уже существует");
         } else {
             em.persist(org);
-            return "Success";
+            return org;
         }
     }
 
     @Override
-    public String updateOrg(Organization org) {
+    public Organization updateOrg(Organization org) {
         Organization o = em.find(Organization.class, org.getId());
         if (o != null) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -57,9 +57,9 @@ public class OrganizationDaoImpl implements OrganizationDao {
             update.where(root.get("id").in(org.getId()));
             Query query = em.createQuery(update);
             query.executeUpdate();
-            return "Success";
+            return org;
         } else {
-            throw new NoOrganizationException("Нет организации с id: " + org.getId());
+            throw new NoObjectException("Нет организации с id: " + org.getId());
         }
     }
 
@@ -67,7 +67,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
     public Organization findOrgById(Long id) {
         Organization o = em.find(Organization.class, id);
         if (o == null) {
-            throw new NoOrganizationException("Нет организации с id: " + id);
+            throw new NoObjectException("Нет организации с id: " + id);
         }
         return o;
     }
@@ -90,7 +90,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
 
         List<Organization> organizations = em.createQuery(criteriaQuery).getResultList();
         if (organizations.isEmpty()) {
-            throw new NoOrganizationException("Организации, удовлетворяющие параметрам, отсутствуют");
+            throw new NoObjectException("Организации, удовлетворяющие параметрам, отсутствуют");
         }
         List<OrganizationRs> listOrgRs = new ArrayList<>();
         for (Organization o : organizations) {

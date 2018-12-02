@@ -1,4 +1,4 @@
-package com.am.catalog.dao.organization;
+package com.am.catalog.dao;
 
 import com.am.catalog.dto.OrganizationRs;
 import com.am.catalog.model.Organization;
@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface OrganizationDao {
 
-    String saveOrg(Organization organization);
+    Organization saveOrg(Organization organization);
 
-    String updateOrg(Organization organization);
+    Organization updateOrg(Organization organization);
 
     Organization findOrgById(Long id);
 
