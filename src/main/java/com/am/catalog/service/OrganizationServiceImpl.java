@@ -1,9 +1,12 @@
 package com.am.catalog.service;
 
 import com.am.catalog.dao.OrganizationDao;
-import com.am.catalog.dto.CrudOperationRs;
 import com.am.catalog.dto.OrganizationRq;
 import com.am.catalog.dto.OrganizationRs;
+import com.am.catalog.dto.responses.CrudOperationRs;
+import com.am.catalog.dto.responses.organization.FindOrgByIdRs;
+import com.am.catalog.dto.responses.organization.GetOrgListRs;
+import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.model.Organization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,10 +45,10 @@ public class OrganizationServiceImpl implements OrganizationService {
         CrudOperationRs rs = new CrudOperationRs();
         if (orgSaved != null) {
             rs.setData("Success");
+            return rs;
         } else {
-            rs.setError("Объект не сохранен");
+            throw new NoObjectException("Организация не создана");
         }
-        return rs;
     }
 
     @Override
@@ -70,22 +73,25 @@ public class OrganizationServiceImpl implements OrganizationService {
         CrudOperationRs rs = new CrudOperationRs();
         if (orgUpdated != null) {
             rs.setData("Success");
+            return rs;
         } else {
-            rs.setError("Объект не обновлен");
+            throw new NoObjectException("Информация не обновлена");
         }
+    }
+
+    @Override
+    public FindOrgByIdRs findOrgById(Long id) {
+        Organization org = dao.findOrgById(id);
+        FindOrgByIdRs rs = new FindOrgByIdRs();
+        rs.setData(org);
         return rs;
     }
 
     @Override
-    public Organization findOrgById(Long id) {
-        Organization org = dao.findOrgById(id);
-        return org;
-    }
-
-    @Override
-    public List<OrganizationRs> getOrgList(String name, String inn, Boolean isActive) {
+    public GetOrgListRs getOrgList(String name, String inn, Boolean isActive) {
         List<OrganizationRs> orgList = dao.getOrgList(name, inn, isActive);
-
-        return orgList;
+        GetOrgListRs rs = new GetOrgListRs();
+        rs.setData(orgList);
+        return rs;
     }
 }

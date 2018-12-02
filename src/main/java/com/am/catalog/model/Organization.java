@@ -1,6 +1,10 @@
 package com.am.catalog.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Column;
 import java.io.Serializable;
 
 @Entity
@@ -10,16 +14,19 @@ public class Organization implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "org_name")
+    @Column(name = "org_name", length = 50, nullable = false)
     private String name;
 
-    @Column(name = "full_name")
+    @Column(name = "full_name", length = 50, nullable = false)
     private String fullName;
 
+    @Column(name = "inn", length = 10, nullable = false)
     private String inn;
 
+    @Column(name = "kpp", length = 9, nullable = false)
     private String kpp;
 
+    @Column(name = "address", length = 10, nullable = false)
     private String address;
 
     private String phone;

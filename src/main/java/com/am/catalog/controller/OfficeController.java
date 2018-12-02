@@ -1,8 +1,9 @@
 package com.am.catalog.controller;
 
-import com.am.catalog.dto.CrudOperationRs;
 import com.am.catalog.dto.OfficeRq;
-import com.am.catalog.dto.OfficeRs;
+import com.am.catalog.dto.responses.CrudOperationRs;
+import com.am.catalog.dto.responses.office.FindOffByIdRs;
+import com.am.catalog.dto.responses.office.GetOffListRs;
 import com.am.catalog.exception.EmptyFieldException;
 import com.am.catalog.service.OfficeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,24 +80,24 @@ public class OfficeController {
     }
 
     @PostMapping(value = "/list/{orgId}")
-    public ResponseEntity<List<OfficeRs>> listOff(@PathVariable Long orgId,
-                                                  @RequestParam(required = false) String name,
-                                                  @RequestParam(required = false) String phone,
-                                                  @RequestParam(required = false) Boolean isActive
+    public ResponseEntity<GetOffListRs> listOff(@PathVariable Long orgId,
+                                                @RequestParam(required = false) String name,
+                                                @RequestParam(required = false) String phone,
+                                                @RequestParam(required = false) Boolean isActive
     ) {
         if (orgId == null || orgId < 1) {
             throw new EmptyFieldException("OrgId cannot be empty or less than one");
         }
-        List<OfficeRs> listOffRs = officeService.getOffList(orgId, name, phone, isActive);
-        return new ResponseEntity<>(listOffRs, HttpStatus.OK);
+        GetOffListRs getOffListRs = officeService.getOffList(orgId, name, phone, isActive);
+        return new ResponseEntity<>(getOffListRs, HttpStatus.OK);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<OfficeRs> idOrg(@PathVariable Long id) {
+    public ResponseEntity<FindOffByIdRs> idOrg(@PathVariable Long id) {
         if (id < 1) {
             throw new EmptyFieldException("Id cannot be empty or less than one");
         }
-        OfficeRs officeRs = officeService.findOffById(id);
-        return new ResponseEntity<>(officeRs, HttpStatus.OK);
+        FindOffByIdRs findOffByIdRs = officeService.findOffById(id);
+        return new ResponseEntity<>(findOffByIdRs, HttpStatus.OK);
     }
 }

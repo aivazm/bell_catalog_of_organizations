@@ -1,6 +1,6 @@
 package com.am.catalog.controller;
 
-import com.am.catalog.dto.CrudOperationRs;
+import com.am.catalog.dto.responses.CrudOperationRs;
 import com.am.catalog.exception.EmptyFieldException;
 import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.exception.NotUniqueException;

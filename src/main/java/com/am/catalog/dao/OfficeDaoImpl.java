@@ -36,7 +36,6 @@ public class OfficeDaoImpl implements OfficeDao {
     public Office updateOff(Office office) {
         Office o = em.find(Office.class, office.getId());
         if (o != null) {
-
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaUpdate<Office> update = cb.createCriteriaUpdate(Office.class);
             Root<Office> root = update.from(Office.class);
@@ -54,8 +53,7 @@ public class OfficeDaoImpl implements OfficeDao {
             }
             update.where(root.get("id").in(office.getId()));
             Query query = em.createQuery(update);
-            int i = query.executeUpdate();
-            System.out.println("Тот самый i = " + i);
+            query.executeUpdate();
             return office;
         } else {
             throw new NoObjectException("Нет офиса с id: " + office.getId());

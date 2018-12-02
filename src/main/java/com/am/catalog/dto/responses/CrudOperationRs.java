@@ -1,4 +1,4 @@
-package com.am.catalog.dto;
+package com.am.catalog.dto.responses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

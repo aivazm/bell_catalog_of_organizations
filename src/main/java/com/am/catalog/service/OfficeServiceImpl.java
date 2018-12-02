@@ -1,9 +1,11 @@
 package com.am.catalog.service;
 
 import com.am.catalog.dao.OfficeDao;
-import com.am.catalog.dto.CrudOperationRs;
 import com.am.catalog.dto.OfficeRq;
 import com.am.catalog.dto.OfficeRs;
+import com.am.catalog.dto.responses.CrudOperationRs;
+import com.am.catalog.dto.responses.office.FindOffByIdRs;
+import com.am.catalog.dto.responses.office.GetOffListRs;
 import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.model.Office;
 import com.am.catalog.model.Organization;
@@ -89,15 +91,22 @@ public class OfficeServiceImpl implements OfficeService {
     }
 
     @Override
-    public OfficeRs findOffById(Long id) {
-        return dao.findOffById(id);
+    public FindOffByIdRs findOffById(Long id) {
+        OfficeRs officeRs = dao.findOffById(id);
+        FindOffByIdRs rs = new FindOffByIdRs();
+        rs.setData(officeRs);
+        return rs;
     }
 
     @Override
-    public List<OfficeRs> getOffList(Long orgId, String name, String phone, Boolean isActive) {
+    public GetOffListRs getOffList(Long orgId, String name, String phone, Boolean isActive) {
         Organization org = em.find(Organization.class, orgId);
+
         if (org != null) {
-            return dao.getOffList(org, name, phone, isActive);
+            GetOffListRs rs = new GetOffListRs();
+            List<OfficeRs> offList= dao.getOffList(org, name, phone, isActive);
+            rs.setData(offList);
+            return rs;
         } else {
             throw new NoObjectException("Нет организации с id: " + orgId);
         }

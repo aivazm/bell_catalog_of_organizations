@@ -1,10 +1,9 @@
 package com.am.catalog.service;
 
-import com.am.catalog.dto.CrudOperationRs;
 import com.am.catalog.dto.OfficeRq;
-import com.am.catalog.dto.OfficeRs;
-
-import java.util.List;
+import com.am.catalog.dto.responses.CrudOperationRs;
+import com.am.catalog.dto.responses.office.FindOffByIdRs;
+import com.am.catalog.dto.responses.office.GetOffListRs;
 
 public interface OfficeService {
 
@@ -12,7 +11,7 @@ public interface OfficeService {
 
     CrudOperationRs updateOff(OfficeRq officeRq);
 
-    OfficeRs findOffById(Long id);
+    FindOffByIdRs findOffById(Long id);
 
-    List<OfficeRs> getOffList(Long orgId, String name, String phone, Boolean isActive);
+    GetOffListRs getOffList(Long orgId, String name, String phone, Boolean isActive);
 }

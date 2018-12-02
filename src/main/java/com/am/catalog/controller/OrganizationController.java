@@ -1,10 +1,10 @@
 package com.am.catalog.controller;
 
-import com.am.catalog.dto.CrudOperationRs;
 import com.am.catalog.dto.OrganizationRq;
-import com.am.catalog.dto.OrganizationRs;
+import com.am.catalog.dto.responses.CrudOperationRs;
+import com.am.catalog.dto.responses.organization.FindOrgByIdRs;
+import com.am.catalog.dto.responses.organization.GetOrgListRs;
 import com.am.catalog.exception.EmptyFieldException;
-import com.am.catalog.model.Organization;
 import com.am.catalog.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,11 +30,14 @@ public class OrganizationController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Organization> idOrg(@PathVariable Long id) {
-        Organization organization = organizationService.findOrgById(id);
-        return new ResponseEntity<>(organization, HttpStatus.OK);
-    }
+    public ResponseEntity<FindOrgByIdRs> idOrg(@PathVariable Long id) {
+        if (id < 1) {
+            throw new EmptyFieldException("Id cannot be empty or less than one");
+        }
+        FindOrgByIdRs findOrgByIdRs = organizationService.findOrgById(id);
+        return new ResponseEntity<>(findOrgByIdRs, HttpStatus.OK);
 
+    }
 
     @PostMapping("/save")
     public ResponseEntity<CrudOperationRs> saveOrg(@RequestBody @Valid OrganizationRq organizationRq,
@@ -49,11 +52,7 @@ public class OrganizationController {
             throw new EmptyFieldException(message.toString().trim());
         } else {
             CrudOperationRs crudOperationRs = organizationService.saveOrg(organizationRq);
-            if (crudOperationRs.getData().isEmpty()) {
-                return new ResponseEntity<>(crudOperationRs, HttpStatus.BAD_REQUEST);
-            } else {
-                return new ResponseEntity<>(crudOperationRs, HttpStatus.OK);
-            }
+            return new ResponseEntity<>(crudOperationRs, HttpStatus.OK);
         }
     }
 
@@ -75,25 +74,21 @@ public class OrganizationController {
             throw new EmptyFieldException(message.toString());
         } else {
             CrudOperationRs crudOperationRs = organizationService.updateOrg(organizationRq);
-            if (crudOperationRs.getData().isEmpty()) {
-                return new ResponseEntity<>(crudOperationRs, HttpStatus.BAD_REQUEST);
-            } else {
-                return new ResponseEntity<>(crudOperationRs, HttpStatus.OK);
-            }
+            return new ResponseEntity<>(crudOperationRs, HttpStatus.OK);
         }
     }
 
 
     @PostMapping(value = "/list")
-    public ResponseEntity<List<OrganizationRs>> listOrg(String name,
-                                                        @RequestParam(required = false) String inn,
-                                                        @RequestParam(required = false) Boolean isActive
+    public ResponseEntity<GetOrgListRs> listOrg(String name,
+                                                @RequestParam(required = false) String inn,
+                                                @RequestParam(required = false) Boolean isActive
     ) {
         if (name == null || name.equals("")) {
             throw new EmptyFieldException("Name cannot be empty");
         }
-        List<OrganizationRs> listOrgRs = organizationService.getOrgList(name, inn, isActive);
-        return new ResponseEntity<>(listOrgRs, HttpStatus.OK);
+        GetOrgListRs getOrgListRs = organizationService.getOrgList(name, inn, isActive);
+        return new ResponseEntity<>(getOrgListRs, HttpStatus.OK);
     }
 
 }
