@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS country (
   id          BIGINT PRIMARY KEY AUTO_INCREMENT,
   code        VARCHAR(3) NOT NULL,
-  countr_name    VARCHAR(50) NOT NULL
+  name    VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Organization (
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS Organization (
 
 CREATE TABLE IF NOT EXISTS Office (
   id           BIGINT  PRIMARY KEY AUTO_INCREMENT,
-  off_name     VARCHAR(50) NOT NULL,
+  name     VARCHAR(50) NOT NULL,
   address      VARCHAR(100) NOT NULL,
   phone        VARCHAR(20),
   is_active    BOOLEAN,
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS doc_type (
   code        VARCHAR(2) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS user_doc (
+CREATE TABLE IF NOT EXISTS document (
   id          BIGINT PRIMARY KEY AUTO_INCREMENT,
   doc_type_id BIGINT,
   FOREIGN KEY (doc_type_id) REFERENCES doc_type(id),
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS User (
   posit         VARCHAR(50) NOT NULL,
   phone         VARCHAR(20),
   doc_id        BIGINT,
-  FOREIGN KEY (doc_id) REFERENCES user_doc(id),
+  FOREIGN KEY (doc_id) REFERENCES document(id),
   citizenship_id BIGINT,
   FOREIGN KEY (citizenship_id) REFERENCES country(id),
   is_identified BOOLEAN,
@@ -60,7 +60,7 @@ CREATE INDEX UX_Office_id ON office (id);
 CREATE INDEX UX_User_id ON User (id);
 CREATE INDEX UX_doc_type_id ON doc_type (id);
 CREATE INDEX UX_country_id ON country (id);
-CREATE INDEX UX_user_doc_id ON user_doc (id);
+CREATE INDEX UX_document_id ON document (id);
 
 
 CREATE INDEX IX_Office_ogr_id ON office (org_id);

@@ -1,6 +1,5 @@
 package com.am.catalog.dao;
 
-import com.am.catalog.dto.OrganizationRs;
 import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.exception.NotUniqueException;
 import com.am.catalog.model.Organization;
@@ -25,7 +24,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
     }
 
     @Override
-    public Organization saveOrg(Organization org) {
+    public void saveOrganization(Organization org) {
         final String FIND_BY_INN_QUERY = "SELECT o FROM Organization o WHERE o.inn = :inn";
         TypedQuery<Organization> query = em.createQuery(FIND_BY_INN_QUERY, Organization.class);
         query.setParameter("inn", org.getInn());
@@ -34,12 +33,11 @@ public class OrganizationDaoImpl implements OrganizationDao {
             throw new NotUniqueException("Организация с ИНН " + org.getInn() + " уже существует");
         } else {
             em.persist(org);
-            return org;
         }
     }
 
     @Override
-    public Organization updateOrg(Organization org) {
+    public void updateOrganization(Organization org) {
         Organization o = em.find(Organization.class, org.getId());
         if (o != null) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -57,14 +55,13 @@ public class OrganizationDaoImpl implements OrganizationDao {
             update.where(root.get("id").in(org.getId()));
             Query query = em.createQuery(update);
             query.executeUpdate();
-            return org;
         } else {
             throw new NoObjectException("Нет организации с id: " + org.getId());
         }
     }
 
     @Override
-    public Organization findOrgById(Long id) {
+    public Organization getOrganizationById(Long id) {
         Organization o = em.find(Organization.class, id);
         if (o == null) {
             throw new NoObjectException("Нет организации с id: " + id);
@@ -73,7 +70,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
     }
 
     @Override
-    public List<OrganizationRs> getOrgList(String name, String inn, Boolean isActive) {
+    public List<Organization> getOrganizationList(String name, String inn, Boolean isActive) {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Organization> criteriaQuery = criteriaBuilder.createQuery(Organization.class);
         Root<Organization> root = criteriaQuery.from(Organization.class);
@@ -92,11 +89,6 @@ public class OrganizationDaoImpl implements OrganizationDao {
         if (organizations.isEmpty()) {
             throw new NoObjectException("Организации, удовлетворяющие параметрам, отсутствуют");
         }
-        List<OrganizationRs> listOrgRs = new ArrayList<>();
-        for (Organization o : organizations) {
-            OrganizationRs orgRs = new OrganizationRs(o.getId(), o.getName(), o.isActive());
-            listOrgRs.add(orgRs);
-        }
-        return listOrgRs;
+        return organizations;
     }
 }

@@ -1,6 +1,5 @@
 package com.am.catalog.dao;
 
-import com.am.catalog.dto.OfficeRs;
 import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.exception.NotUniqueException;
 import com.am.catalog.model.Office;
@@ -26,14 +25,13 @@ public class OfficeDaoImpl implements OfficeDao {
     }
 
     @Override
-    public Office saveOff(Office office) {
+    public void saveOffice(Office office) {
         getUniqueOffice(office.getName(), office.getOrganization());
         em.persist(office);
-        return office;
     }
 
     @Override
-    public Office updateOff(Office office) {
+    public void updateOffice(Office office) {
         Office o = em.find(Office.class, office.getId());
         if (o != null) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -44,7 +42,9 @@ public class OfficeDaoImpl implements OfficeDao {
             if (office.getPhone() != null) {
                 update.set(root.get("phone"), office.getPhone());
             }
-            update.set(root.get("isActive"), office.isActive());
+            if (office.isActive() != null) {
+                update.set(root.get("isActive"), office.isActive());
+            }
             if (office.getOrganization() != null) {
                 getUniqueOffice(office.getName(), office.getOrganization());
                 update.set(root.get("organization"), office.getOrganization());
@@ -54,23 +54,22 @@ public class OfficeDaoImpl implements OfficeDao {
             update.where(root.get("id").in(office.getId()));
             Query query = em.createQuery(update);
             query.executeUpdate();
-            return office;
         } else {
             throw new NoObjectException("Нет офиса с id: " + office.getId());
         }
     }
 
     @Override
-    public OfficeRs findOffById(Long id) {
-        Office o = em.find(Office.class, id);
-        if (o == null) {
+    public Office getOfficeById(Long id) {
+        Office office = em.find(Office.class, id);
+        if (office == null) {
             throw new NoObjectException("Нет офиса с id: " + id);
         }
-        return new OfficeRs(o.getId(), o.getName(), o.getAddress(), o.getPhone(), o.isActive());
+        return office;
     }
 
     @Override
-    public List<OfficeRs> getOffList(Organization org, String name, String phone, Boolean isActive) {
+    public List<Office> getOfficeList(Organization org, String name, String phone, Boolean isActive) {
 
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Office> criteriaQuery = criteriaBuilder.createQuery(Office.class);
@@ -90,24 +89,20 @@ public class OfficeDaoImpl implements OfficeDao {
         List<Office> offices = em.createQuery(criteriaQuery).getResultList();
         if (offices.isEmpty()) {
             throw new NoObjectException("Офисы, удовлетворяющие параметрам, отсутствуют");
+        } else {
+            return offices;
         }
-        List<OfficeRs> listOffRs = new ArrayList<>();
-        for (Office o : offices) {
-            OfficeRs offRs = new OfficeRs(o.getId(), o.getName(), o.isActive());
-            listOffRs.add(offRs);
-        }
-        return listOffRs;
     }
 
 
-    private void getUniqueOffice(String offName, Organization org) {
+    private void getUniqueOffice(String officeName, Organization org) {
         final String FIND_BY_NAME_QUERY = "SELECT o FROM Office o WHERE o.name = :name AND o.organization = :organization";
         TypedQuery<Office> query = em.createQuery(FIND_BY_NAME_QUERY, Office.class);
-        query.setParameter("name", offName);
+        query.setParameter("name", officeName);
         query.setParameter("organization", org);
         List<Office> offList = query.getResultList();
         if (!offList.isEmpty()) {
-            throw new NotUniqueException("В организации с id " + org.getId() + " офис с именем " + offName + " уже существует");
+            throw new NotUniqueException("В организации с id " + org.getId() + " офис с именем " + officeName + " уже существует");
         }
     }
 }

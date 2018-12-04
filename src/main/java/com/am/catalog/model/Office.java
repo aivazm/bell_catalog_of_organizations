@@ -16,7 +16,7 @@ public class Office  implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "off_name", length = 50, nullable = false)
+    @Column(name = "name", length = 50, nullable = false)
     private String name;
 
     @Column(name = "address", length = 100, nullable = false)
@@ -32,10 +32,6 @@ public class Office  implements Serializable {
     private Organization organization;
 
     public Office() {
-    }
-
-    public Office(Long id) {
-        this.id = id;
     }
 
     public Long getId() {

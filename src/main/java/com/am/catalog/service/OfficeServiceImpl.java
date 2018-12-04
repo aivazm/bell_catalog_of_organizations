@@ -1,11 +1,9 @@
 package com.am.catalog.service;
 
 import com.am.catalog.dao.OfficeDao;
-import com.am.catalog.dto.OfficeRq;
-import com.am.catalog.dto.OfficeRs;
-import com.am.catalog.dto.responses.CrudOperationRs;
-import com.am.catalog.dto.responses.office.FindOffByIdRs;
-import com.am.catalog.dto.responses.office.GetOffListRs;
+import com.am.catalog.dto.OfficeRequest;
+import com.am.catalog.dto.OfficeResponse;
+import com.am.catalog.exception.EmptyFieldException;
 import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.model.Office;
 import com.am.catalog.model.Organization;
@@ -14,101 +12,133 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class OfficeServiceImpl implements OfficeService {
     private final OfficeDao dao;
     private final EntityManager em;
+    private final Validator validator;
 
     @Autowired
-    public OfficeServiceImpl(OfficeDao dao, EntityManager em) {
+    public OfficeServiceImpl(OfficeDao dao, EntityManager em, Validator validator) {
         this.dao = dao;
         this.em = em;
+        this.validator = validator;
     }
 
     @Override
     @Transactional
-    public CrudOperationRs saveOff(OfficeRq officeRq) {
+    public OfficeResponse addOffice(OfficeRequest officeRequest) {
+        StringBuilder message = new StringBuilder();
+        if (officeRequest.getOrgId() == null) {
+            message.append("OrgId cannot be empty; ");
+        }
+
+        Set<ConstraintViolation<OfficeRequest>> validate = validator.validate(officeRequest);
+        if (!validate.isEmpty()) {
+            for (ConstraintViolation<OfficeRequest> violation : validate) {
+                message.append(violation.getMessage());
+                message.append("; ");
+            }
+        }
+        if (message.length() > 0) {
+            throw new EmptyFieldException(message.toString().trim());
+        }
         Office office = new Office();
-        office.setName(officeRq.getName());
-        office.setAddress(officeRq.getAddress());
-        Organization o = em.find(Organization.class, officeRq.getOrgId());
+        office.setName(officeRequest.getName());
+        office.setAddress(officeRequest.getAddress());
+        Organization o = em.find(Organization.class, officeRequest.getOrgId());
         if (o == null) {
-            throw new NoObjectException("Нет организации с id: " + officeRq.getOrgId());
+            throw new NoObjectException("Нет организации с id: " + officeRequest.getOrgId());
         } else {
             office.setOrganization(o);
         }
-        if (officeRq.getPhone() != null) {
-            office.setPhone(officeRq.getPhone());
+        if (officeRequest.getPhone() != null) {
+            office.setPhone(officeRequest.getPhone());
         }
-        if (officeRq.isActive() != null) {
-            office.setActive(officeRq.isActive());
+        if (officeRequest.isActive() != null) {
+            office.setActive(officeRequest.isActive());
         } else {
             office.setActive(false);
         }
-        Office officeSaved = dao.saveOff(office);
-        CrudOperationRs rs = new CrudOperationRs();
-        if (officeSaved != null) {
-            rs.setData("Success");
-        } else {
-            rs.setError("Объект не сохранен");
-        }
-        return rs;
+        dao.saveOffice(office);
+        return new OfficeResponse("success");
     }
 
     @Override
     @Transactional
-    public CrudOperationRs updateOff(OfficeRq officeRq) {
+    public OfficeResponse updateOffice(OfficeRequest officeRequest) {
+        StringBuilder message = new StringBuilder();
+        if (officeRequest.getId() == null) {
+            message.append("id cannot be empty; ");
+        }
+        Set<ConstraintViolation<OfficeRequest>> validate = validator.validate(officeRequest);
+        if (!validate.isEmpty()) {
+            for (ConstraintViolation<OfficeRequest> violation : validate) {
+                message.append(violation.getMessage());
+                message.append("; ");
+            }
+        }
+        if (message.length() > 0) {
+            throw new EmptyFieldException(message.toString().trim());
+        }
         Office office = new Office();
-        office.setId(officeRq.getId());
-        office.setName(officeRq.getName());
-        office.setAddress(officeRq.getAddress());
-        if (officeRq.getOrgId() != null) {
-            Organization o = em.find(Organization.class, officeRq.getOrgId());
+        office.setId(officeRequest.getId());
+        office.setName(officeRequest.getName());
+        office.setAddress(officeRequest.getAddress());
+        if (officeRequest.getOrgId() != null) {
+            Organization o = em.find(Organization.class, officeRequest.getOrgId());
             if (o == null) {
-                throw new NoObjectException("Нет организации с id: " + officeRq.getOrgId());
+                throw new NoObjectException("Нет организации с id: " + officeRequest.getOrgId());
             } else {
                 office.setOrganization(o);
             }
         }
-        if (officeRq.getPhone() != null) {
-            office.setPhone(officeRq.getPhone());
+        if (officeRequest.getPhone() != null) {
+            office.setPhone(officeRequest.getPhone());
         }
-        if (officeRq.isActive() != null) {
-            office.setActive(officeRq.isActive());
-        } else {
-            office.setActive(false);
+        if (officeRequest.isActive() != null) {
+            office.setActive(officeRequest.isActive());
         }
-        Office officeSaved = dao.updateOff(office);
-        CrudOperationRs rs = new CrudOperationRs();
-        if (officeSaved != null) {
-            rs.setData("Success");
-        } else {
-            rs.setError("Объект не сохранен");
-        }
-        return rs;
+        dao.updateOffice(office);
+        return new OfficeResponse("success");
     }
 
     @Override
-    public FindOffByIdRs findOffById(Long id) {
-        OfficeRs officeRs = dao.findOffById(id);
-        FindOffByIdRs rs = new FindOffByIdRs();
-        rs.setData(officeRs);
-        return rs;
+    public OfficeResponse getOfficeById(Long id) {
+        if (id < 1) {
+            throw new EmptyFieldException("Id cannot be empty or less than one");
+        }
+        Office office = dao.getOfficeById(id);
+        return new OfficeResponse(office.getId(),
+                office.getName(),
+                office.getAddress(),
+                office.getPhone(),
+                office.isActive());
     }
 
     @Override
-    public GetOffListRs getOffList(Long orgId, String name, String phone, Boolean isActive) {
+    public List<OfficeResponse> getOfficeList(Long orgId, String name, String phone, Boolean isActive) {
+        if (orgId < 1) {
+            throw new EmptyFieldException("OrgId cannot be empty or less than one");
+        }
         Organization org = em.find(Organization.class, orgId);
-
         if (org != null) {
-            GetOffListRs rs = new GetOffListRs();
-            List<OfficeRs> offList= dao.getOffList(org, name, phone, isActive);
-            rs.setData(offList);
-            return rs;
+            List<Office> offices = dao.getOfficeList(org, name, phone, isActive);
+            List<OfficeResponse> officeResponses = new ArrayList<>();
+            for (Office o : offices) {
+                OfficeResponse officeResponse = new OfficeResponse(o.getId(), o.getName(), o.isActive());
+                officeResponses.add(officeResponse);
+            }
+            return officeResponses;
         } else {
             throw new NoObjectException("Нет организации с id: " + orgId);
         }
     }
+
 }

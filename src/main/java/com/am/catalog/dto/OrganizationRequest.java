@@ -4,13 +4,25 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
-public class OfficeRq {
+public class OrganizationRequest {
 
     private Long id;
 
     @Size(max = 50)
     @NotEmpty(message = "Name cannot be empty")
     private String name;
+
+    @Size(max = 50)
+    @NotBlank(message = "Full name cannot be empty")
+    private String fullName;
+
+    @Size(max = 10, min = 10)
+    @NotBlank(message = "INN cannot be empty")
+    private String inn;
+
+    @Size(max = 9, min = 9)
+    @NotBlank(message = "KPP cannot be empty")
+    private String kpp;
 
     @Size(max = 100)
     @NotBlank(message = "Address cannot be empty")
@@ -20,11 +32,6 @@ public class OfficeRq {
     private String phone;
 
     private Boolean isActive;
-
-    private Long orgId;
-
-    public OfficeRq() {
-    }
 
     public Long getId() {
         return id;
@@ -40,6 +47,30 @@ public class OfficeRq {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getInn() {
+        return inn;
+    }
+
+    public void setInn(String inn) {
+        this.inn = inn;
+    }
+
+    public String getKpp() {
+        return kpp;
+    }
+
+    public void setKpp(String kpp) {
+        this.kpp = kpp;
     }
 
     public String getAddress() {
@@ -64,13 +95,5 @@ public class OfficeRq {
 
     public void setActive(Boolean active) {
         isActive = active;
-    }
-
-    public Long getOrgId() {
-        return orgId;
-    }
-
-    public void setOrgId(Long orgId) {
-        this.orgId = orgId;
     }
 }

@@ -1,17 +1,16 @@
 package com.am.catalog.dao;
 
-import com.am.catalog.dto.OrganizationRs;
 import com.am.catalog.model.Organization;
 
 import java.util.List;
 
 public interface OrganizationDao {
 
-    Organization saveOrg(Organization organization);
+    void saveOrganization(Organization organization);
 
-    Organization updateOrg(Organization organization);
+    void updateOrganization(Organization organization);
 
-    Organization findOrgById(Long id);
+    Organization getOrganizationById(Long id);
 
-    List<OrganizationRs> getOrgList(String name, String inn, Boolean isActive);
+    List<Organization> getOrganizationList(String name, String inn, Boolean isActive);
 }

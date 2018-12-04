@@ -1,17 +1,18 @@
 package com.am.catalog.service;
 
-import com.am.catalog.dto.responses.CrudOperationRs;
-import com.am.catalog.dto.responses.organization.FindOrgByIdRs;
-import com.am.catalog.dto.responses.organization.GetOrgListRs;
-import com.am.catalog.dto.OrganizationRq;
+import com.am.catalog.dto.OrganizationRequest;
+import com.am.catalog.dto.OrganizationResponse;
+import com.am.catalog.dto.responses.SuccessResponse;
+
+import java.util.List;
 
 
 public interface OrganizationService {
-    CrudOperationRs saveOrg(OrganizationRq organizationRq);
+    SuccessResponse add(OrganizationRequest organizationRq);
 
-    CrudOperationRs updateOrg(OrganizationRq organizationRq);
+    SuccessResponse updateOrganization(OrganizationRequest organizationRq);
 
-    FindOrgByIdRs findOrgById(Long id);
+    OrganizationResponse findOrgById(Long id);
 
-    GetOrgListRs getOrgList(String name, String inn, Boolean isActive);
+    List<OrganizationResponse> getOrgList(String name, String inn, Boolean isActive);
 }
