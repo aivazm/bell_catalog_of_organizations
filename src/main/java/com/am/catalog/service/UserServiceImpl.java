@@ -1,0 +1,221 @@
+package com.am.catalog.service;
+
+import com.am.catalog.dao.OfficeDao;
+import com.am.catalog.dao.UserDao;
+import com.am.catalog.view.UserView;
+import com.am.catalog.exception.EmptyFieldException;
+import com.am.catalog.model.Country;
+import com.am.catalog.model.DocType;
+import com.am.catalog.model.Document;
+import com.am.catalog.model.Office;
+import com.am.catalog.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * {@inheritDoc}
+ */
+@Service
+public class UserServiceImpl implements UserService {
+
+    private StringBuilder message;
+    private final UserDao userDao;
+    private final OfficeDao officeDao;
+    private final Validator validator;
+
+    @Autowired
+    public UserServiceImpl(UserDao userDao, OfficeDao officeDao, Validator validator) {
+        this.userDao = userDao;
+        this.officeDao = officeDao;
+        this.validator = validator;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public UserView saveUser(UserView userView) {
+        message = new StringBuilder();
+        User user = getCrudeUser(userView);
+        Office office = officeDao.getOfficeById(userView.getOfficeId());
+        if (office != null) {
+            user.setOffice(office);
+        } else {
+            message.append("Офис с указанным id отсутствует");
+        }
+        String code = userView.getDocCode();
+        String name = userView.getDocName();
+        String number = userView.getDocNumber();
+        Date date = userView.getDocDate();
+        if (code != null || name != null || number != null || date != null) {
+            if (code == null || code.isEmpty() || name == null || name.isEmpty() ||
+                    number == null || number.isEmpty() || date == null
+            ) {
+                message.append("При добавлении работника c документом поля DocCode, DocName, DocNumber, DocDate обязательны к заполнению; ");
+            } else {
+                DocType docType = new DocType(code, name);
+                Document document = new Document(docType, number, date);
+                user.setDocument(document);
+            }
+        }
+        if (userView.isIdentified() != null) {
+            user.setIdentified(userView.isIdentified());
+        } else {
+            user.setIdentified(false);
+        }
+        if (message.length() == 0) {
+            userDao.saveUser(user);
+            return new UserView("success");
+        } else {
+            throw new EmptyFieldException(message.toString().trim());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public UserView updateUser(UserView userView) {
+        message = new StringBuilder();
+        User user = getCrudeUser(userView);
+        if (userView.getId() == null) {
+            message.append("Поле id не может быт пустым; ");
+        } else {
+            user.setId(userView.getId());
+        }
+        if (userView.getOfficeId() != null) {
+            Office office = officeDao.getOfficeById(userView.getOfficeId());
+            if (office != null) {
+                user.setOffice(office);
+            } else {
+                message.append("Офис с указанным id отсутствует");
+            }
+        }
+        if (userView.isIdentified() != null) {
+            user.setIdentified(userView.isIdentified());
+        }
+        String name = userView.getDocName();
+        String number = userView.getDocNumber();
+        Date date = userView.getDocDate();
+        if (name != null || number != null || date != null) {
+            if (name == null || name.isEmpty() || number == null || number.isEmpty() || date == null) {
+                message.append("При обновлении документа работника поля DocName, DocNumber, DocDate обязательны к заполнению; ");
+            } else {
+                DocType docType = new DocType();
+                docType.setName(name);
+                Document document = new Document(docType, number, date);
+                user.setDocument(document);
+            }
+        }
+        if (userView.isIdentified() != null) {
+            user.setIdentified(userView.isIdentified());
+        }
+        if (message.length() == 0) {
+            userDao.updateUser(user);
+            return new UserView("success");
+        } else {
+            throw new EmptyFieldException(message.toString().trim());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserView getUserById(Long id) {
+        if (id < 1) {
+            throw new EmptyFieldException("Id cannot be empty or less than one");
+        }
+        User user = userDao.getUserById(id);
+        String docName = null;
+        String docNumber = null;
+        Date docDate = null;
+        String countryName = null;
+        String countryCode = null;
+        if (user.getDocument() != null) {
+            docName = user.getDocument().getDocType().getName();
+            docNumber = user.getDocument().getNumber();
+            docDate = user.getDocument().getDate();
+        }
+        if (user.getCountry() != null) {
+            countryName = user.getCountry().getName();
+            countryCode = user.getCountry().getCode();
+        }
+        return new UserView(
+                user.getId(),
+                user.getFirstName(),
+                user.getSecondName(),
+                user.getMiddleName(),
+                user.getPosition(),
+                user.getPhone(),
+                docName,
+                docNumber,
+                docDate,
+                countryName,
+                countryCode,
+                user.isIdentified()
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserView> getUserList(Long officeId,
+                                      String firstName,
+                                      String secondName,
+                                      String middleName,
+                                      String position,
+                                      String docCode,
+                                      String citizenshipCode
+    ) {
+        if(officeId == null || officeId<1){
+            throw new EmptyFieldException("Параметр officeId обязателен к заполнению и не может быть меньше единицы");
+        }
+        List<User> userList = userDao.getUserList(officeId, firstName, secondName, middleName, position, docCode, citizenshipCode);
+        List<UserView> userViewList = new ArrayList<>();
+        for (User user : userList) {
+            UserView userView = new UserView(user.getId(),user.getFirstName(),user.getSecondName(),
+                                             user.getMiddleName(),user.getPosition());
+            userViewList.add(userView);
+        }
+        return userViewList;
+    }
+
+    private User getCrudeUser(UserView userView) {
+        Set<ConstraintViolation<UserView>> validate = validator.validate(userView);
+        if (!validate.isEmpty()) {
+            for (ConstraintViolation<UserView> violation : validate) {
+                message.append(violation.getMessage());
+                message.append("; ");
+            }
+        }
+        User user = new User();
+        user.setFirstName(userView.getFirstName());
+        user.setPosition(userView.getPosition());
+        if (userView.getSecondName() != null) {
+            user.setSecondName(userView.getSecondName());
+        }
+        if (userView.getMiddleName() != null) {
+            user.setMiddleName(userView.getMiddleName());
+        }
+        if (userView.getPhone() != null) {
+            user.setPhone(userView.getPhone());
+        }
+        if (userView.getCitizenshipCode() != null) {
+            user.setCountry(new Country(userView.getCitizenshipCode()));
+        }
+        return user;
+    }
+
+}

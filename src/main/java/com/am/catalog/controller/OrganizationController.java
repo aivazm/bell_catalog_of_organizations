@@ -1,18 +1,24 @@
 package com.am.catalog.controller;
 
-import com.am.catalog.dto.OrganizationRequest;
-import com.am.catalog.dto.OrganizationResponse;
-import com.am.catalog.dto.responses.SuccessResponse;
 import com.am.catalog.service.OrganizationService;
+import com.am.catalog.view.OrganizationView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
+/**
+ * Контроллер Organization. Принимает запросы и передает в Сервис
+ * Возвращает View-объекты
+ */
 @RestController
 @RequestMapping(value = "/organization", produces = APPLICATION_JSON_VALUE)
 public class OrganizationController {
@@ -23,25 +29,46 @@ public class OrganizationController {
         this.organizationService = organizationService;
     }
 
+    /**
+     * ПОлучить организацию по id
+     * @param id
+     * @return
+     */
     @GetMapping("{id}")
-    public OrganizationResponse getOrganizationById(@PathVariable Long id) {
-        return organizationService.findOrgById(id);
+    public OrganizationView getOrganizationById(@PathVariable Long id) {
+        return organizationService.getOrganizationById(id);
     }
 
-    @RequestMapping(value = "/save", method = {POST})
-    public SuccessResponse saveOrganization(@RequestBody OrganizationRequest organizationRequest) {
-        return organizationService.add(organizationRequest);
+    /**
+     * Добавить организацию
+     * @param organizationView
+     * @return
+     */
+    @PostMapping("/save")
+    public OrganizationView saveOrganization(@RequestBody OrganizationView organizationView) {
+        return organizationService.saveOrganization(organizationView);
     }
 
-
+    /**
+     * Обновить поля существующей организации
+     * @param organizationView
+     * @return
+     */
     @PostMapping("/update")
-    public SuccessResponse updateOrganization(@RequestBody @Valid OrganizationRequest organizationRequest) {
-        return organizationService.updateOrganization(organizationRequest);
+    public OrganizationView updateOrganization(@RequestBody @Valid OrganizationView organizationView) {
+        return organizationService.updateOrganization(organizationView);
     }
 
+    /**
+     * Получить List организаций, соответствующих параметрам
+     * @param name
+     * @param inn
+     * @param isActive
+     * @return
+     */
     @PostMapping(value = "/list")
-    public List<OrganizationResponse> getListOrganizations(String name, String inn, Boolean isActive) {
-        return organizationService.getOrgList(name, inn, isActive);
+    public List<OrganizationView> getListOrganizations(String name, String inn, Boolean isActive) {
+        return organizationService.getOrganizationList(name, inn, isActive);
     }
 
 }

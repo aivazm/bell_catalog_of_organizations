@@ -1,8 +1,8 @@
 package com.am.catalog.service;
 
 import com.am.catalog.dao.OfficeDao;
-import com.am.catalog.dto.OfficeRequest;
-import com.am.catalog.dto.OfficeResponse;
+import com.am.catalog.dao.OrganizationDao;
+import com.am.catalog.view.OfficeView;
 import com.am.catalog.exception.EmptyFieldException;
 import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.model.Office;
@@ -11,37 +11,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * {@inheritDoc}
+ */
 @Service
 public class OfficeServiceImpl implements OfficeService {
-    private final OfficeDao dao;
-    private final EntityManager em;
+    private final OfficeDao officeDao;
+    private final OrganizationDao organizationDao;
     private final Validator validator;
 
     @Autowired
-    public OfficeServiceImpl(OfficeDao dao, EntityManager em, Validator validator) {
-        this.dao = dao;
-        this.em = em;
+    public OfficeServiceImpl(OfficeDao officeDao, OrganizationDao organizationDao, Validator validator) {
+        this.officeDao = officeDao;
+        this.organizationDao = organizationDao;
         this.validator = validator;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
-    public OfficeResponse addOffice(OfficeRequest officeRequest) {
+    public OfficeView saveOffice(OfficeView officeView) {
         StringBuilder message = new StringBuilder();
-        if (officeRequest.getOrgId() == null) {
+        if (officeView.getOrgId() == null) {
             message.append("OrgId cannot be empty; ");
         }
 
-        Set<ConstraintViolation<OfficeRequest>> validate = validator.validate(officeRequest);
+        Set<ConstraintViolation<OfficeView>> validate = validator.validate(officeView);
         if (!validate.isEmpty()) {
-            for (ConstraintViolation<OfficeRequest> violation : validate) {
+            for (ConstraintViolation<OfficeView> violation : validate) {
                 message.append(violation.getMessage());
                 message.append("; ");
             }
@@ -50,36 +55,39 @@ public class OfficeServiceImpl implements OfficeService {
             throw new EmptyFieldException(message.toString().trim());
         }
         Office office = new Office();
-        office.setName(officeRequest.getName());
-        office.setAddress(officeRequest.getAddress());
-        Organization o = em.find(Organization.class, officeRequest.getOrgId());
+        office.setName(officeView.getName());
+        office.setAddress(officeView.getAddress());
+        Organization o = organizationDao.getOrganizationById(officeView.getOrgId());
         if (o == null) {
-            throw new NoObjectException("Нет организации с id: " + officeRequest.getOrgId());
+            throw new NoObjectException("Нет организации с id: " + officeView.getOrgId());
         } else {
             office.setOrganization(o);
         }
-        if (officeRequest.getPhone() != null) {
-            office.setPhone(officeRequest.getPhone());
+        if (officeView.getPhone() != null) {
+            office.setPhone(officeView.getPhone());
         }
-        if (officeRequest.isActive() != null) {
-            office.setActive(officeRequest.isActive());
+        if (officeView.isActive() != null) {
+            office.setActive(officeView.isActive());
         } else {
             office.setActive(false);
         }
-        dao.saveOffice(office);
-        return new OfficeResponse("success");
+        officeDao.saveOffice(office);
+        return new OfficeView("success");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
-    public OfficeResponse updateOffice(OfficeRequest officeRequest) {
+    public OfficeView updateOffice(OfficeView officeView) {
         StringBuilder message = new StringBuilder();
-        if (officeRequest.getId() == null) {
+        if (officeView.getId() == null) {
             message.append("id cannot be empty; ");
         }
-        Set<ConstraintViolation<OfficeRequest>> validate = validator.validate(officeRequest);
+        Set<ConstraintViolation<OfficeView>> validate = validator.validate(officeView);
         if (!validate.isEmpty()) {
-            for (ConstraintViolation<OfficeRequest> violation : validate) {
+            for (ConstraintViolation<OfficeView> violation : validate) {
                 message.append(violation.getMessage());
                 message.append("; ");
             }
@@ -88,54 +96,60 @@ public class OfficeServiceImpl implements OfficeService {
             throw new EmptyFieldException(message.toString().trim());
         }
         Office office = new Office();
-        office.setId(officeRequest.getId());
-        office.setName(officeRequest.getName());
-        office.setAddress(officeRequest.getAddress());
-        if (officeRequest.getOrgId() != null) {
-            Organization o = em.find(Organization.class, officeRequest.getOrgId());
+        office.setId(officeView.getId());
+        office.setName(officeView.getName());
+        office.setAddress(officeView.getAddress());
+        if (officeView.getOrgId() != null) {
+            Organization o = organizationDao.getOrganizationById(officeView.getOrgId());
             if (o == null) {
-                throw new NoObjectException("Нет организации с id: " + officeRequest.getOrgId());
+                throw new NoObjectException("Нет организации с id: " + officeView.getOrgId());
             } else {
                 office.setOrganization(o);
             }
         }
-        if (officeRequest.getPhone() != null) {
-            office.setPhone(officeRequest.getPhone());
+        if (officeView.getPhone() != null) {
+            office.setPhone(officeView.getPhone());
         }
-        if (officeRequest.isActive() != null) {
-            office.setActive(officeRequest.isActive());
+        if (officeView.isActive() != null) {
+            office.setActive(officeView.isActive());
         }
-        dao.updateOffice(office);
-        return new OfficeResponse("success");
+        officeDao.updateOffice(office);
+        return new OfficeView("success");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public OfficeResponse getOfficeById(Long id) {
+    public OfficeView getOfficeById(Long id) {
         if (id < 1) {
             throw new EmptyFieldException("Id cannot be empty or less than one");
         }
-        Office office = dao.getOfficeById(id);
-        return new OfficeResponse(office.getId(),
+        Office office = officeDao.getOfficeById(id);
+        return new OfficeView(office.getId(),
                 office.getName(),
                 office.getAddress(),
                 office.getPhone(),
                 office.isActive());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<OfficeResponse> getOfficeList(Long orgId, String name, String phone, Boolean isActive) {
+    public List<OfficeView> getOfficeList(Long orgId, String name, String phone, Boolean isActive) {
         if (orgId < 1) {
             throw new EmptyFieldException("OrgId cannot be empty or less than one");
         }
-        Organization org = em.find(Organization.class, orgId);
+        Organization org = organizationDao.getOrganizationById(orgId);
         if (org != null) {
-            List<Office> offices = dao.getOfficeList(org, name, phone, isActive);
-            List<OfficeResponse> officeResponses = new ArrayList<>();
+            List<Office> offices = officeDao.getOfficeList(org, name, phone, isActive);
+            List<OfficeView> viewList = new ArrayList<>();
             for (Office o : offices) {
-                OfficeResponse officeResponse = new OfficeResponse(o.getId(), o.getName(), o.isActive());
-                officeResponses.add(officeResponse);
+                OfficeView view = new OfficeView(o.getId(), o.getName(), o.isActive());
+                viewList.add(view);
             }
-            return officeResponses;
+            return viewList;
         } else {
             throw new NoObjectException("Нет организации с id: " + orgId);
         }

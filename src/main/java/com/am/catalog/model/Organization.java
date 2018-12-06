@@ -7,30 +7,56 @@ import javax.persistence.Id;
 import javax.persistence.Column;
 import java.io.Serializable;
 
+/**
+ * Организация
+ */
 @Entity
 public class Organization implements Serializable {
-
+    /**
+     * Идентификатор
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "org_name", length = 50, nullable = false)
+    /**
+     * Короткое наименование организации
+     */
+    @Column(length = 50, nullable = false)
     private String name;
 
+    /**
+     * Полное наименование организации
+     */
     @Column(name = "full_name", length = 50, nullable = false)
     private String fullName;
 
-    @Column(name = "inn", length = 10, nullable = false)
+    /**
+     * ИНН организации
+     */
+    @Column(length = 10, nullable = false, unique = true)
     private String inn;
 
-    @Column(name = "kpp", length = 9, nullable = false)
+    /**
+     * КПП организации
+     */
+    @Column(length = 9, nullable = false)
     private String kpp;
 
-    @Column(name = "address", length = 10, nullable = false)
+    /**
+     * Адрес организации
+     */
+    @Column(length = 10, nullable = false)
     private String address;
 
+    /**
+     * Телефон организации
+     */
     private String phone;
 
+    /**
+     * Активность организации
+     */
     @Column(name = "is_active")
     private Boolean isActive;
 
@@ -101,8 +127,8 @@ public class Organization implements Serializable {
         return isActive;
     }
 
-    public void setActive(Boolean active) {
-        isActive = active;
+    public void setActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 
 }

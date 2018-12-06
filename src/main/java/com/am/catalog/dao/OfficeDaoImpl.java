@@ -14,6 +14,9 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * {@inheritDoc}
+ */
 @Repository
 public class OfficeDaoImpl implements OfficeDao {
 
@@ -29,7 +32,9 @@ public class OfficeDaoImpl implements OfficeDao {
         getUniqueOffice(office.getName(), office.getOrganization());
         em.persist(office);
     }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateOffice(Office office) {
         Office o = em.find(Office.class, office.getId());
@@ -59,6 +64,9 @@ public class OfficeDaoImpl implements OfficeDao {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Office getOfficeById(Long id) {
         Office office = em.find(Office.class, id);
@@ -68,6 +76,9 @@ public class OfficeDaoImpl implements OfficeDao {
         return office;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Office> getOfficeList(Organization org, String name, String phone, Boolean isActive) {
 

@@ -1,6 +1,5 @@
 package com.am.catalog.controller;
 
-import com.am.catalog.dto.responses.ErrorResponse;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.core.MethodParameter;
@@ -11,6 +10,9 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+/**
+ * Контроллер для оборачивания body ответа в тег data{}
+ */
 @ControllerAdvice
 public class ResponseWrapperController implements ResponseBodyAdvice<Object> {
     @Override
@@ -18,15 +20,25 @@ public class ResponseWrapperController implements ResponseBodyAdvice<Object> {
         return true;
     }
 
+    /**
+     * Перед выводом оборачивает body в тег data{}
+     * Сообщения об ощибке игнорируются
+     * @param body
+     * @param methodParameter
+     * @param mediaType
+     * @param aClass
+     * @param serverHttpRequest
+     * @param serverHttpResponse
+     * @return
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public Object beforeBodyWrite(Object body,
                                   MethodParameter methodParameter,
                                   MediaType mediaType,
                                   Class<? extends HttpMessageConverter<?>> aClass,
                                   ServerHttpRequest serverHttpRequest,
                                   ServerHttpResponse serverHttpResponse) {
-        if (body instanceof ErrorResponse) {
+        if (body instanceof ExceptionHandlerController.ErrorResponse) {
             return body;
         }
         return new Wrapper<>(body);

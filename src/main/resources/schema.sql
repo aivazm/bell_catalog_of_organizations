@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS User (
   FOREIGN KEY (doc_id) REFERENCES document(id),
   citizenship_id BIGINT,  --Внешник ключ. Служит для установления связи с таблицей country
   FOREIGN KEY (citizenship_id) REFERENCES country(id),
-  is_identified BOOLEAN,  --Параметр, отобрадающий активность работника
+  is_identified BOOLEAN,  --Параметр, отображающий идентификацию работника
   office_id     BIGINT, --Внешник ключ. Служит для установления связи с таблицей Office
   FOREIGN KEY (office_id) REFERENCES Office(id)
 );

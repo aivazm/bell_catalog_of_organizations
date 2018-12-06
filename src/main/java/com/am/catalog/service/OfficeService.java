@@ -1,17 +1,43 @@
 package com.am.catalog.service;
 
-import com.am.catalog.dto.OfficeRequest;
-import com.am.catalog.dto.OfficeResponse;
+import com.am.catalog.view.OfficeView;
 
 import java.util.List;
 
+/**
+ * Сервис класса Office. Принимает данные из OfficeController,
+ * проверяет и передает в OfficeDao
+ */
 public interface OfficeService {
 
-    OfficeResponse addOffice(OfficeRequest officeRequest);
+    /**
+     * Добавить офис
+     * @param officeView
+     * @return
+     */
+    OfficeView saveOffice(OfficeView officeView);
 
-    OfficeResponse updateOffice(OfficeRequest officeRequest);
+    /**
+     * Обновить поля существующего офиса
+     * @param officeView
+     * @return
+     */
+    OfficeView updateOffice(OfficeView officeView);
 
-    OfficeResponse getOfficeById(Long id);
+    /**
+     * Получить офис по id
+     * @param id
+     * @return
+     */
+    OfficeView getOfficeById(Long id);
 
-    List<OfficeResponse> getOfficeList(Long orgId, String name, String phone, Boolean isActive);
+    /**
+     * Получить List офисов, соответствующих параметрам
+     * @param orgId
+     * @param name
+     * @param phone
+     * @param isActive
+     * @return
+     */
+    List<OfficeView> getOfficeList(Long orgId, String name, String phone, Boolean isActive);
 }

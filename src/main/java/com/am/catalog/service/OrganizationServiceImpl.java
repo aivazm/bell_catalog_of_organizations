@@ -1,9 +1,7 @@
 package com.am.catalog.service;
 
 import com.am.catalog.dao.OrganizationDao;
-import com.am.catalog.dto.OrganizationRequest;
-import com.am.catalog.dto.OrganizationResponse;
-import com.am.catalog.dto.responses.SuccessResponse;
+import com.am.catalog.view.OrganizationView;
 import com.am.catalog.exception.EmptyFieldException;
 import com.am.catalog.model.Organization;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * {@inheritDoc}
+ */
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
 
@@ -28,33 +29,42 @@ public class OrganizationServiceImpl implements OrganizationService {
         this.validator = validator;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
-    public SuccessResponse add(OrganizationRequest organizationRequest) {
-        Organization organization = getValidOrganization(organizationRequest);
+    public OrganizationView saveOrganization(OrganizationView organizationView) {
+        Organization organization = getValidOrganization(organizationView);
         dao.saveOrganization(organization);
-        return new SuccessResponse("success");
+        return new OrganizationView("success");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
-    public SuccessResponse updateOrganization(OrganizationRequest organizationRequest) {
-        if (organizationRequest.getId() == null) {
+    public OrganizationView updateOrganization(OrganizationView organizationView) {
+        if (organizationView.getId() == null) {
             throw new EmptyFieldException("id cannot be empty;");
         }
-        Organization organization = getValidOrganization(organizationRequest);
-        organization.setId(organizationRequest.getId());
+        Organization organization = getValidOrganization(organizationView);
+        organization.setId(organizationView.getId());
         dao.updateOrganization(organization);
-        return new SuccessResponse("success");
+        return new OrganizationView("success");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public OrganizationResponse findOrgById(Long id) {
+    public OrganizationView getOrganizationById(Long id) {
         if (id < 1) {
             throw new EmptyFieldException("Id cannot be empty or less than one");
         }
         Organization org = dao.getOrganizationById(id);
-        OrganizationResponse rs = new OrganizationResponse(
+        OrganizationView view = new OrganizationView(
                 org.getId(),
                 org.getName(),
                 org.getFullName(),
@@ -64,45 +74,48 @@ public class OrganizationServiceImpl implements OrganizationService {
                 org.getPhone(),
                 org.isActive()
         );
-        return rs;
+        return view;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<OrganizationResponse> getOrgList(String name, String inn, Boolean isActive) {
+    public List<OrganizationView> getOrganizationList(String name, String inn, Boolean isActive) {
         if (name == null || name.equals("")) {
             throw new EmptyFieldException("Name cannot be empty");
         }
         List<Organization> organizations = dao.getOrganizationList(name, inn, isActive);
 
-        List<OrganizationResponse> organizationResponseList = new ArrayList<>();
+        List<OrganizationView> viewList = new ArrayList<>();
         for (Organization o : organizations) {
-            OrganizationResponse organizationResponse = new OrganizationResponse(o.getId(), o.getName(), o.isActive());
-            organizationResponseList.add(organizationResponse);
+            OrganizationView view = new OrganizationView(o.getId(), o.getName(), o.isActive());
+            viewList.add(view);
         }
-        return organizationResponseList;
+        return viewList;
     }
 
-    private Organization getValidOrganization(OrganizationRequest organizationRequest) {
-        Set<ConstraintViolation<OrganizationRequest>> validate = validator.validate(organizationRequest);
+    private Organization getValidOrganization(OrganizationView organizationView) {
+        Set<ConstraintViolation<OrganizationView>> validate = validator.validate(organizationView);
         if (!validate.isEmpty()) {
             StringBuilder message = new StringBuilder();
-            for (ConstraintViolation<OrganizationRequest> violation : validate) {
+            for (ConstraintViolation<OrganizationView> violation : validate) {
                 message.append(violation.getMessage());
                 message.append("; ");
             }
             throw new EmptyFieldException(message.toString().trim());
         }
         Organization organization = new Organization();
-        organization.setName(organizationRequest.getName());
-        organization.setFullName(organizationRequest.getFullName());
-        organization.setInn(organizationRequest.getInn());
-        organization.setKpp(organizationRequest.getKpp());
-        organization.setAddress(organizationRequest.getAddress());
-        if (organizationRequest.getPhone() != null) {
-            organization.setPhone(organizationRequest.getPhone());
+        organization.setName(organizationView.getName());
+        organization.setFullName(organizationView.getFullName());
+        organization.setInn(organizationView.getInn());
+        organization.setKpp(organizationView.getKpp());
+        organization.setAddress(organizationView.getAddress());
+        if (organizationView.getPhone() != null) {
+            organization.setPhone(organizationView.getPhone());
         }
-        if (organizationRequest.isActive() != null) {
-            organization.setActive(organizationRequest.isActive());
+        if (organizationView.isActive() != null) {
+            organization.setActive(organizationView.isActive());
         } else {
             organization.setActive(false);
         }

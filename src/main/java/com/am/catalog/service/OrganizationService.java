@@ -1,18 +1,42 @@
 package com.am.catalog.service;
 
-import com.am.catalog.dto.OrganizationRequest;
-import com.am.catalog.dto.OrganizationResponse;
-import com.am.catalog.dto.responses.SuccessResponse;
+import com.am.catalog.view.OrganizationView;
 
 import java.util.List;
 
-
+/**
+ * Сервис класса Organization. Принимает данные из OrganizationController,
+ * проверяет и передает в OrganizationDao
+ */
 public interface OrganizationService {
-    SuccessResponse add(OrganizationRequest organizationRq);
 
-    SuccessResponse updateOrganization(OrganizationRequest organizationRq);
+    /**
+     * Добавить организацию
+     * @param organizationRq
+     * @return
+     */
+    OrganizationView saveOrganization(OrganizationView organizationRq);
 
-    OrganizationResponse findOrgById(Long id);
+    /**
+     * Обновить поля существующей организации
+     * @param organizationRq
+     * @return
+     */
+    OrganizationView updateOrganization(OrganizationView organizationRq);
 
-    List<OrganizationResponse> getOrgList(String name, String inn, Boolean isActive);
+    /**
+     * Получить организацию по id
+     * @param id
+     * @return
+     */
+    OrganizationView getOrganizationById(Long id);
+
+    /**
+     * Получить List организаций, соответствующих параметрам
+     * @param name
+     * @param inn
+     * @param isActive
+     * @return
+     */
+    List<OrganizationView> getOrganizationList(String name, String inn, Boolean isActive);
 }
