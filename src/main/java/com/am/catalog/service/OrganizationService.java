@@ -12,31 +12,31 @@ public interface OrganizationService {
 
     /**
      * Добавить организацию
-     * @param organizationRq
-     * @return
+     * @param organizationView OrganizationView-объект с обязательными параметрами name, fullName, inn, kpp, address
+     * @return Объект OrganizationView (result: "success");
      */
-    OrganizationView saveOrganization(OrganizationView organizationRq);
+    OrganizationView saveOrganization(OrganizationView organizationView);
 
     /**
      * Обновить поля существующей организации
-     * @param organizationRq
-     * @return
+     * @param organizationView OrganizationView-объект с обязательными параметрами id, name, fullName, inn, kpp, address
+     * @return Объект OrganizationView (result: "success");
      */
-    OrganizationView updateOrganization(OrganizationView organizationRq);
+    OrganizationView updateOrganization(OrganizationView organizationView);
 
     /**
      * Получить организацию по id
-     * @param id
-     * @return
+     * @param id id организации
+     * @return Объект OrganizationView (id, name, fullName, inn, kpp, address, phone, isActive);
      */
     OrganizationView getOrganizationById(Long id);
 
     /**
      * Получить List организаций, соответствующих параметрам
-     * @param name
-     * @param inn
-     * @param isActive
-     * @return
+     * @param name обязательный параметр. Наименование организации
+     * @param inn ИНН организации
+     * @param isActive активность организации
+     * @return List объектов OrganizationView (id, name, isActive);
      */
     List<OrganizationView> getOrganizationList(String name, String inn, Boolean isActive);
 }

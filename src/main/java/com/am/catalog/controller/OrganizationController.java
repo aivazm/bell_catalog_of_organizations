@@ -1,5 +1,6 @@
 package com.am.catalog.controller;
 
+import com.am.catalog.service.OfficeService;
 import com.am.catalog.service.OrganizationService;
 import com.am.catalog.view.OrganizationView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,9 @@ public class OrganizationController {
 
     /**
      * ПОлучить организацию по id
-     * @param id
-     * @return
+     * @param id PathVariable. id организации
+     * @return Объект OrganizationView (id, name, fullName, inn, kpp, address, phone, isActive) - результат работы метода organizationService.getOrganizationById(id);
+     * @see OrganizationService#getOrganizationById(Long id)
      */
     @GetMapping("{id}")
     public OrganizationView getOrganizationById(@PathVariable Long id) {
@@ -41,8 +43,9 @@ public class OrganizationController {
 
     /**
      * Добавить организацию
-     * @param organizationView
-     * @return
+     * @param organizationView JSON-объект с обязательными параметрами name, fullName, inn, kpp, address
+     * @return Объект OrganizationView (result: "success") - результат работы метода organizationService.saveOrganization(organizationView);
+     * @see OrganizationService#saveOrganization(OrganizationView organizationRq);
      */
     @PostMapping("/save")
     public OrganizationView saveOrganization(@RequestBody OrganizationView organizationView) {
@@ -51,8 +54,9 @@ public class OrganizationController {
 
     /**
      * Обновить поля существующей организации
-     * @param organizationView
-     * @return
+     * @param organizationView JSON-объект с обязательными параметрами id, name, fullName, inn, kpp, address
+     * @return Объект OrganizationView (result: "success") - результат работы метода organizationService.updateOrganization(organizationView);
+     * @see OrganizationService#updateOrganization(OrganizationView organizationRq);
      */
     @PostMapping("/update")
     public OrganizationView updateOrganization(@RequestBody @Valid OrganizationView organizationView) {
@@ -61,10 +65,11 @@ public class OrganizationController {
 
     /**
      * Получить List организаций, соответствующих параметрам
-     * @param name
-     * @param inn
-     * @param isActive
-     * @return
+     * @param name обязательный параметр. Наименование организации
+     * @param inn ИНН организации
+     * @param isActive активность организации
+     * @return List объектов OrganizationView (id, name, isActive) - результат работы метода organizationService.getOrganizationList(name, inn, isActive);
+     * @see OrganizationService#getOrganizationList(String name, String inn, Boolean isActive);
      */
     @PostMapping(value = "/list")
     public List<OrganizationView> getListOrganizations(String name, String inn, Boolean isActive) {

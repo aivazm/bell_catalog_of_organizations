@@ -29,8 +29,9 @@ public class OfficeController {
 
     /**
      * Добавить новый офис
-     * @param officeView
-     * @return
+     * @param officeView JSON-объект с обязательными параметрами id, address
+     * @return Объект OfficeView (result: "success") - результат работы метода officeService.saveOffice(officeView);
+     * @see OfficeService#saveOffice(OfficeView)
      */
     @PostMapping("/save")
     public OfficeView saveOffice(@RequestBody OfficeView officeView) {
@@ -39,8 +40,9 @@ public class OfficeController {
 
     /**
      * Обновить поля существующего офиса
-     * @param officeView
-     * @return
+     * @param officeView JSON-объект с обязательными параметрами id, name, address
+     * @return Объект OfficeView (result: "success") - результат работы метода officeService.updateOffice(officeView);
+     * @see OfficeService#updateOffice(OfficeView)
      */
     @PostMapping("/update")
     public OfficeView updateOffice(@RequestBody OfficeView officeView) {
@@ -49,11 +51,12 @@ public class OfficeController {
 
     /**
      * Получить List офисов, соответствующих параметрам
-     * @param orgId
-     * @param name
-     * @param phone
-     * @param isActive
-     * @return
+     * @param orgId обязательный параметр id организации
+     * @param name  наименование офиса
+     * @param phone телефон офиса
+     * @param isActive активность офиса
+     * @return List объектов OfficeView (id, name, isActive) - результат работы метода officeService.getOfficeList(orgId, name, phone, isActive);
+     * @see OfficeService#getOfficeList(Long orgId, String name, String phone, Boolean isActive)
      */
     @PostMapping(value = "/list/{orgId}")
     public List<OfficeView> getListOffices(@PathVariable Long orgId, String name, String phone, Boolean isActive) {
@@ -62,8 +65,10 @@ public class OfficeController {
 
     /**
      * Получить офис по id
-     * @param id
-     * @return
+     * @param id PathVariable. id офиса
+     * @return Объект OfficeView (id, name, address, phone, isActive) - результат работы метода officeService.getOfficeById(id);
+
+     * @see OfficeService#getOfficeById(Long id)
      */
     @GetMapping("{id}")
     public OfficeView getOfficeById(@PathVariable Long id) {

@@ -29,7 +29,7 @@ public class ResponseWrapperController implements ResponseBodyAdvice<Object> {
      * @param aClass
      * @param serverHttpRequest
      * @param serverHttpResponse
-     * @return
+     * @return Wrapper<>(body) или body в случае ErrorResponse;
      */
     @Override
     public Object beforeBodyWrite(Object body,

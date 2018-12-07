@@ -10,29 +10,29 @@ import java.util.List;
 public interface OrganizationDao {
     /**
      * Добавить новую организацию
-     * @param organization
+     * @param organization Organization-объект
      */
     void saveOrganization(Organization organization);
 
     /**
      * Обновить поля существующей организации
-     * @param organization
+     * @param organization Organization-объект
      */
     void updateOrganization(Organization organization);
 
     /**
      * Получить организацию по id
-     * @param id
-     * @return
+     * @param id id организации
+     * @return Объект Organization;
      */
     Organization getOrganizationById(Long id);
 
     /**
      * Получить List организаций, соответствующих параметрам
-     * @param name
-     * @param inn
-     * @param isActive
-     * @return
+     * @param name наименование организации
+     * @param inn ИНН организации
+     * @param isActive активность организации
+     * @return List объектов Organization;
      */
     List<Organization> getOrganizationList(String name, String inn, Boolean isActive);
 }

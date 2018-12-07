@@ -12,30 +12,30 @@ public interface OfficeDao {
 
     /**
      * Добавить новый офис
-     * @param office
+     * @param office Office-объект
      */
     void saveOffice(Office office);
 
     /**
      * Обновить поля существующего офиса
-     * @param office
+     * @param office Office-объект
      */
     void updateOffice(Office office);
 
     /**
      * Получить офис по id
-     * @param id
-     * @return
+     * @param id id офиса
+     * @return Объект Office;
      */
     Office getOfficeById(Long id);
 
     /**
      * Получить List офисов, соответствующих параметрам
-     * @param org
-     * @param name
-     * @param phone
-     * @param isActive
-     * @return
+     * @param org Organization-объект
+     * @param name наименование офиса
+     * @param phone телефон офиса
+     * @param isActive активность офиса
+     * @return List объектов Office;
      */
     List<Office> getOfficeList(Organization org, String name, String phone, Boolean isActive);
 }

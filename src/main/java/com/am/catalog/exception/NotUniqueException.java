@@ -5,6 +5,10 @@ package com.am.catalog.exception;
  */
 public class NotUniqueException extends RuntimeException {
 
+    /**
+     * Конструктор исключения
+     * @param message
+     */
     public NotUniqueException(String message) {
         super(message);
     }
