@@ -2,13 +2,21 @@ package com.am.catalog.dao;
 
 import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.exception.NotUniqueException;
-import com.am.catalog.model.*;
+import com.am.catalog.model.Country;
+import com.am.catalog.model.DocType;
+import com.am.catalog.model.Document;
+import com.am.catalog.model.Office;
+import com.am.catalog.model.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +51,8 @@ public class UserDaoImpl implements UserDao {
      * {@inheritDoc}
      */
     @Override
-    public void updateUser(User user) {
-        if (em.find(User.class, user.getId()) != null) {
+    public void updateUser(User user, Long id) {
+        if (em.find(User.class, id) != null) {
             Document oldDocument = em.find(User.class, user.getId()).getDocument();
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaUpdate<User> update = cb.createCriteriaUpdate(User.class);
@@ -69,14 +77,14 @@ public class UserDaoImpl implements UserDao {
             if (user.isIdentified() != null) {
                 update.set(root.get("isIdentified"), user.isIdentified());
             }
-            update.where(root.get("id").in(user.getId()));
+            update.where(root.get("id").in(id));
             Query query = em.createQuery(update);
             if (user.getDocument() != null && oldDocument != null) {
                 em.remove(oldDocument);
             }
             query.executeUpdate();
         } else {
-            throw new NoObjectException("Нет работника с id: " + user.getId());
+            throw new NoObjectException("Нет работника с id: " + id);
         }
     }
 

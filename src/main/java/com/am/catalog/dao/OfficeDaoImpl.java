@@ -10,7 +10,11 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,12 +36,13 @@ public class OfficeDaoImpl implements OfficeDao {
         getUniqueOffice(office.getName(), office.getOrganization());
         em.persist(office);
     }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public void updateOffice(Office office) {
-        Office o = em.find(Office.class, office.getId());
+    public void updateOffice(Office office, Long id) {
+        Office o = em.find(Office.class, id);
         if (o != null) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaUpdate<Office> update = cb.createCriteriaUpdate(Office.class);
@@ -56,11 +61,11 @@ public class OfficeDaoImpl implements OfficeDao {
             } else {
                 getUniqueOffice(office.getName(), o.getOrganization());
             }
-            update.where(root.get("id").in(office.getId()));
+            update.where(root.get("id").in(id));
             Query query = em.createQuery(update);
             query.executeUpdate();
         } else {
-            throw new NoObjectException("Нет офиса с id: " + office.getId());
+            throw new NoObjectException("Нет офиса с id: " + id);
         }
     }
 

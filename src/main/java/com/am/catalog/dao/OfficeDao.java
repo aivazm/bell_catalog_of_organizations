@@ -12,18 +12,21 @@ public interface OfficeDao {
 
     /**
      * Добавить новый офис
+     *
      * @param office Office-объект
      */
     void saveOffice(Office office);
 
     /**
      * Обновить поля существующего офиса
+     *
      * @param office Office-объект
      */
-    void updateOffice(Office office);
+    void updateOffice(Office office, Long id);
 
     /**
      * Получить офис по id
+     *
      * @param id id офиса
      * @return Объект Office;
      */
@@ -31,9 +34,10 @@ public interface OfficeDao {
 
     /**
      * Получить List офисов, соответствующих параметрам
-     * @param org Organization-объект
-     * @param name наименование офиса
-     * @param phone телефон офиса
+     *
+     * @param org      Organization-объект
+     * @param name     наименование офиса
+     * @param phone    телефон офиса
      * @param isActive активность офиса
      * @return List объектов Office;
      */

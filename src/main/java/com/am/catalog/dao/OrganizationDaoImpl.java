@@ -9,7 +9,11 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,8 +50,8 @@ public class OrganizationDaoImpl implements OrganizationDao {
      * {@inheritDoc}
      */
     @Override
-    public void updateOrganization(Organization org) {
-        Organization o = em.find(Organization.class, org.getId());
+    public void updateOrganization(Organization org, Long id) {
+        Organization o = em.find(Organization.class, id);
         if (o != null) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaUpdate<Organization> update = cb.createCriteriaUpdate(Organization.class);
@@ -61,11 +65,11 @@ public class OrganizationDaoImpl implements OrganizationDao {
                 update.set(root.get("phone"), org.getPhone());
             }
             update.set(root.get("isActive"), org.isActive());
-            update.where(root.get("id").in(org.getId()));
+            update.where(root.get("id").in(id));
             Query query = em.createQuery(update);
             query.executeUpdate();
         } else {
-            throw new NoObjectException("Нет организации с id: " + org.getId());
+            throw new NoObjectException("Нет организации с id: " + id);
         }
     }
 

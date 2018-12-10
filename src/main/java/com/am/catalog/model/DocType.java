@@ -19,11 +19,11 @@ public class DocType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(length = 2, nullable = false)
 
     /**
      * Двузначный цифровой код
      */
+    @Column(length = 2, nullable = false)
     private String code;
 
     /**
@@ -42,10 +42,6 @@ public class DocType {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getCode() {

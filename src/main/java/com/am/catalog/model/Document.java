@@ -57,10 +57,6 @@ public class Document {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public DocType getDocType() {
         return docType;
     }

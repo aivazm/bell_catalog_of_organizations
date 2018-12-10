@@ -1,5 +1,6 @@
 package com.am.catalog.controller;
 
+import com.am.catalog.view.ErrorResponse;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.core.MethodParameter;
@@ -20,25 +21,16 @@ public class ResponseWrapperController implements ResponseBodyAdvice<Object> {
         return true;
     }
 
-    /**
-     * Перед выводом оборачивает body в тег data{}
-     * Сообщения об ощибке игнорируются
-     * @param body
-     * @param methodParameter
-     * @param mediaType
-     * @param aClass
-     * @param serverHttpRequest
-     * @param serverHttpResponse
-     * @return Wrapper<>(body) или body в случае ErrorResponse;
-     */
+
     @Override
+    @SuppressWarnings("unchecked")
     public Object beforeBodyWrite(Object body,
                                   MethodParameter methodParameter,
                                   MediaType mediaType,
                                   Class<? extends HttpMessageConverter<?>> aClass,
                                   ServerHttpRequest serverHttpRequest,
                                   ServerHttpResponse serverHttpResponse) {
-        if (body instanceof ExceptionHandlerController.ErrorResponse) {
+        if (body instanceof ErrorResponse) {
             return body;
         }
         return new Wrapper<>(body);

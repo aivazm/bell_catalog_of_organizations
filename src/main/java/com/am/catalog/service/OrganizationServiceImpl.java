@@ -1,9 +1,9 @@
 package com.am.catalog.service;
 
 import com.am.catalog.dao.OrganizationDao;
-import com.am.catalog.view.OrganizationView;
 import com.am.catalog.exception.EmptyFieldException;
 import com.am.catalog.model.Organization;
+import com.am.catalog.view.OrganizationView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,8 +50,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             throw new EmptyFieldException("id cannot be empty;");
         }
         Organization organization = getValidOrganization(organizationView);
-        organization.setId(organizationView.getId());
-        dao.updateOrganization(organization);
+        dao.updateOrganization(organization, organizationView.getId());
         return new OrganizationView("success");
     }
 
@@ -81,18 +80,21 @@ public class OrganizationServiceImpl implements OrganizationService {
      * {@inheritDoc}
      */
     @Override
-    public List<OrganizationView> getOrganizationList(String name, String inn, Boolean isActive) {
-        if (name == null || name.equals("")) {
+    public List<OrganizationView> getOrganizationList(OrganizationView organizationView) {
+        if (organizationView.getName() == null || organizationView.getName().isEmpty()) {
             throw new EmptyFieldException("Name cannot be empty");
         }
-        List<Organization> organizations = dao.getOrganizationList(name, inn, isActive);
-
+        List<Organization> organizations = dao.getOrganizationList(organizationView.getName(),
+                organizationView.getInn(),
+                organizationView.isActive()
+        );
         List<OrganizationView> viewList = new ArrayList<>();
         for (Organization o : organizations) {
             OrganizationView view = new OrganizationView(o.getId(), o.getName(), o.isActive());
             viewList.add(view);
         }
         return viewList;
+
     }
 
     private Organization getValidOrganization(OrganizationView organizationView) {

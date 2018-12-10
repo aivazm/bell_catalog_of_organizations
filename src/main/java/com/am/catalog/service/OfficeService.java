@@ -12,6 +12,7 @@ public interface OfficeService {
 
     /**
      * Добавить офис
+     *
      * @param officeView OfficeView-объект с обязательными параметрами id, address
      * @return Объект OfficeView (result: "success");
      */
@@ -19,6 +20,7 @@ public interface OfficeService {
 
     /**
      * Обновить поля существующего офиса
+     *
      * @param officeView OfficeView-объект с обязательными параметрами id, name, address
      * @return Объект OfficeView (result: "success");
      */
@@ -26,6 +28,7 @@ public interface OfficeService {
 
     /**
      * Получить офис по id
+     *
      * @param id id офиса
      * @return Объект OfficeView (id, name, address, phone, isActive);
      */
@@ -33,11 +36,10 @@ public interface OfficeService {
 
     /**
      * Получить List офисов, соответствующих параметрам
-     * @param orgId обязательный параметр id организации
-     * @param name  наименование офиса
-     * @param phone телефон офиса
-     * @param isActive активность офиса
+     *
+     * @param orgId      обязательный параметр. Id организации;
+     * @param officeView OfficeView-объект с возможными параметрами (name, phone, isActive);
      * @return List объектов OfficeView (id, name, isActive);
      */
-    List<OfficeView> getOfficeList(Long orgId, String name, String phone, Boolean isActive);
+    List<OfficeView> getOfficeList(Long orgId, OfficeView officeView);
 }

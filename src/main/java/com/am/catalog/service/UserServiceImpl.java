@@ -2,13 +2,13 @@ package com.am.catalog.service;
 
 import com.am.catalog.dao.OfficeDao;
 import com.am.catalog.dao.UserDao;
-import com.am.catalog.view.UserView;
 import com.am.catalog.exception.EmptyFieldException;
 import com.am.catalog.model.Country;
 import com.am.catalog.model.DocType;
 import com.am.catalog.model.Document;
 import com.am.catalog.model.Office;
 import com.am.catalog.model.User;
+import com.am.catalog.view.UserView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,8 +90,6 @@ public class UserServiceImpl implements UserService {
         User user = getCrudeUser(userView);
         if (userView.getId() == null) {
             message.append("Поле id не может быт пустым; ");
-        } else {
-            user.setId(userView.getId());
         }
         if (userView.getOfficeId() != null) {
             Office office = officeDao.getOfficeById(userView.getOfficeId());
@@ -121,7 +119,7 @@ public class UserServiceImpl implements UserService {
             user.setIdentified(userView.isIdentified());
         }
         if (message.length() == 0) {
-            userDao.updateUser(user);
+            userDao.updateUser(user, userView.getId());
             return new UserView("success");
         } else {
             throw new EmptyFieldException(message.toString().trim());
@@ -171,26 +169,27 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public List<UserView> getUserList(Long officeId,
-                                      String firstName,
-                                      String secondName,
-                                      String middleName,
-                                      String position,
-                                      String docCode,
-                                      String citizenshipCode
-    ) {
-        if(officeId == null || officeId<1){
+    public List<UserView> getUserList(UserView userView) {
+        if (userView.getOfficeId() == null || userView.getOfficeId() < 1) {
             throw new EmptyFieldException("Параметр officeId обязателен к заполнению и не может быть меньше единицы");
         }
-        List<User> userList = userDao.getUserList(officeId, firstName, secondName, middleName, position, docCode, citizenshipCode);
+        List<User> userList = userDao.getUserList(userView.getOfficeId(),
+                userView.getFirstName(),
+                userView.getSecondName(),
+                userView.getMiddleName(),
+                userView.getPosition(),
+                userView.getDocCode(),
+                userView.getCitizenshipCode()
+        );
         List<UserView> userViewList = new ArrayList<>();
         for (User user : userList) {
-            UserView userView = new UserView(user.getId(),user.getFirstName(),user.getSecondName(),
-                                             user.getMiddleName(),user.getPosition());
-            userViewList.add(userView);
+            UserView view = new UserView(user.getId(), user.getFirstName(), user.getSecondName(),
+                    user.getMiddleName(), user.getPosition());
+            userViewList.add(view);
         }
         return userViewList;
     }
+
 
     private User getCrudeUser(UserView userView) {
         Set<ConstraintViolation<UserView>> validate = validator.validate(userView);

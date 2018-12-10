@@ -11,18 +11,21 @@ public interface UserDao {
 
     /**
      * Добавить нового работника
+     *
      * @param user User-объект
      */
     void saveUser(User user);
 
     /**
      * Обновить поля существующего работника
+     *
      * @param user User-объект
      */
-    void updateUser(User user);
+    void updateUser(User user, Long id);
 
     /**
      * Получить работника по id
+     *
      * @param id id работника
      * @return Объект User;
      */
@@ -30,12 +33,13 @@ public interface UserDao {
 
     /**
      * Получить List работников, соответствующих параметрам
-     * @param officeId id офиса работника
-     * @param firstName имя работника
-     * @param secondName фамилия работника
-     * @param middleName отчество работника
-     * @param position должность работника
-     * @param docCode код документа работника
+     *
+     * @param officeId        id офиса работника
+     * @param firstName       имя работника
+     * @param secondName      фамилия работника
+     * @param middleName      отчество работника
+     * @param position        должность работника
+     * @param docCode         код документа работника
      * @param citizenshipCode код государства, гражданином которого является работник
      * @return List объектов User;
      */

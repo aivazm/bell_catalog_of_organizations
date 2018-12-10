@@ -2,11 +2,11 @@ package com.am.catalog.service;
 
 import com.am.catalog.dao.OfficeDao;
 import com.am.catalog.dao.OrganizationDao;
-import com.am.catalog.view.OfficeView;
 import com.am.catalog.exception.EmptyFieldException;
 import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.model.Office;
 import com.am.catalog.model.Organization;
+import com.am.catalog.view.OfficeView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,7 +96,6 @@ public class OfficeServiceImpl implements OfficeService {
             throw new EmptyFieldException(message.toString().trim());
         }
         Office office = new Office();
-        office.setId(officeView.getId());
         office.setName(officeView.getName());
         office.setAddress(officeView.getAddress());
         if (officeView.getOrgId() != null) {
@@ -113,7 +112,7 @@ public class OfficeServiceImpl implements OfficeService {
         if (officeView.isActive() != null) {
             office.setActive(officeView.isActive());
         }
-        officeDao.updateOffice(office);
+        officeDao.updateOffice(office, officeView.getId());
         return new OfficeView("success");
     }
 
@@ -137,13 +136,17 @@ public class OfficeServiceImpl implements OfficeService {
      * {@inheritDoc}
      */
     @Override
-    public List<OfficeView> getOfficeList(Long orgId, String name, String phone, Boolean isActive) {
+    public List<OfficeView> getOfficeList(Long orgId, OfficeView officeView) {
         if (orgId < 1) {
             throw new EmptyFieldException("OrgId cannot be empty or less than one");
         }
         Organization org = organizationDao.getOrganizationById(orgId);
         if (org != null) {
-            List<Office> offices = officeDao.getOfficeList(org, name, phone, isActive);
+            List<Office> offices = officeDao.getOfficeList(org,
+                    officeView.getName(),
+                    officeView.getPhone(),
+                    officeView.isActive()
+            );
             List<OfficeView> viewList = new ArrayList<>();
             for (Office o : offices) {
                 OfficeView view = new OfficeView(o.getId(), o.getName(), o.isActive());
@@ -151,8 +154,7 @@ public class OfficeServiceImpl implements OfficeService {
             }
             return viewList;
         } else {
-            throw new NoObjectException("Нет организации с id: " + orgId);
+            throw new NoObjectException("Нет организации с id: " + officeView.getOrgId());
         }
     }
-
 }

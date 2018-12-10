@@ -77,15 +77,8 @@ public class User {
     @JoinColumn(name = "office_id")
     private Office office;
 
-    public User() {
-    }
-
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getFirstName() {

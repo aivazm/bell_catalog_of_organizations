@@ -11,6 +11,7 @@ import java.util.List;
 public interface UserService {
     /**
      * Добавить работника
+     *
      * @param userView UserView-объект с обязательными параметрами firstName и position
      * @return Объект UserView (result: "success");
      */
@@ -18,6 +19,7 @@ public interface UserService {
 
     /**
      * Обновить поля существующего работника
+     *
      * @param userView UserView-объект с обязательными параметрами id, firstName и position
      * @return Объект UserView (result: "success");
      */
@@ -25,6 +27,7 @@ public interface UserService {
 
     /**
      * Получить работника по id
+     *
      * @param id id работника
      * @return Объект UserView (id, firstName, secondName, middleName, position, phone, docName, docNumber, docDate, citizenshipName, citizenshipCode, isIdentified);
      */
@@ -32,14 +35,9 @@ public interface UserService {
 
     /**
      * Получить List работников, соответствующих параметрам
-     * @param officeId обязательный параметр. Id офиса работника
-     * @param firstName имя работника
-     * @param secondName фамилия работника
-     * @param middleName отчество работника
-     * @param position должность работника
-     * @param docCode код документа работника
-     * @param citizenshipCode код государства, гражданином которого является работник
+     *
+     * @param userView UserView-объект с обязательными параметрами id
      * @return List объектов UserView (id, firstName, secondName, middleName, position);
      */
-    List<UserView> getUserList(Long officeId, String firstName, String secondName, String middleName, String position, String docCode, String citizenshipCode);
+    List<UserView> getUserList(UserView userView);
 }
