@@ -22,7 +22,7 @@ VALUES ('На Полевой', 'Полевая, 2', '222-22-02', 'true', 2);
 INSERT INTO document (doc_type_id, doc_number, doc_date)
 VALUES (1, '1201 123456', '2001-01-13');
 INSERT INTO document (doc_type_id, doc_number, doc_date)
-VALUES (2, '1201 612345', '2001-01-14');
+VALUES (1, '1201 612345', '2001-01-14');
 INSERT INTO document (doc_type_id, doc_number, doc_date)
 VALUES (1, '1201 561234', '2001-01-15');
 INSERT INTO document (doc_type_id, doc_number, doc_date)

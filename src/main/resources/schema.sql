@@ -1,65 +1,71 @@
--- Таблица справочника Государства
 CREATE TABLE IF NOT EXISTS country (
-  id          BIGINT PRIMARY KEY AUTO_INCREMENT,  -- Первичный ключ. Служит для связи с таблицей User
-  code        VARCHAR(3) NOT NULL,  --Трехзначный цифровой код
-  name    VARCHAR(50) NOT NULL  --Нименование государства
+  id          BIGINT                COMMENT 'Уникальный идентификатор' PRIMARY KEY AUTO_INCREMENT,
+  code        VARCHAR(3) NOT NULL   COMMENT 'Трехзначный цифровой код',
+  name        VARCHAR(50) NOT NULL  COMMENT 'Нименование государства'
 );
+COMMENT ON TABLE country IS 'Таблица справочника Государства';
 
--- Таблица организаций
+
 CREATE TABLE IF NOT EXISTS Organization (
-  id           BIGINT PRIMARY KEY AUTO_INCREMENT, --Первичный ключ. Служит для связи с таблицей Office
-  name         VARCHAR(50) NOT NULL,  --Короткое наименование организации
-  full_name    VARCHAR(50) NOT NULL,  --Поное наименование организации
-  inn          VARCHAR(10) NOT NULL UNIQUE, --ИНН организации. Должен быть уникальным
-  kpp          VARCHAR(9) NOT NULL, --КПП организации
-  address      VARCHAR(100) NOT NULL, --Адрес организации
-  phone        VARCHAR(20), --Телефон организации
-  is_active BOOLEAN --Параметр, отобрадающий активность организации
+  id           BIGINT                       COMMENT 'Уникальный идентификатор' PRIMARY KEY AUTO_INCREMENT,
+  name         VARCHAR(50) NOT NULL         COMMENT 'Короткое наименование организации',
+  full_name    VARCHAR(50) NOT NULL         COMMENT 'Поное наименование организации',
+  inn          VARCHAR(10) NOT NULL         COMMENT 'ИНН организации',
+  kpp          VARCHAR(9) NOT NULL          COMMENT 'КПП организации',
+  address      VARCHAR(100) NOT NULL        COMMENT 'Адрес организации',
+  phone        VARCHAR(20)                  COMMENT 'Телефон организации',
+  is_active    BOOLEAN                      COMMENT 'Активность организации'
 );
+COMMENT ON TABLE Organization IS 'Таблица организаций';
 
--- Таблица офисов
+
 CREATE TABLE IF NOT EXISTS Office (
-  id           BIGINT  PRIMARY KEY AUTO_INCREMENT,  --Первичный ключ
-  name         VARCHAR(50) NOT NULL,  --Наименование офиса
-  address      VARCHAR(100) NOT NULL, --Адрес офиса
-  phone        VARCHAR(20), --Телефон офиса
-  is_active    BOOLEAN, --Параметр, отобрадающий активность офиса
-  org_id       BIGINT,  --Внешний ключ. Служит для установления связи с таблицей Organization
+  id           BIGINT                       COMMENT 'Уникальный идентификатор' PRIMARY KEY AUTO_INCREMENT,
+  name         VARCHAR(50) NOT NULL         COMMENT 'Наименование офиса',
+  address      VARCHAR(100) NOT NULL        COMMENT 'Адрес офиса',
+  phone        VARCHAR(20)                  COMMENT 'Телефон офиса',
+  is_active    BOOLEAN                      COMMENT 'Активность офиса',
+  org_id       BIGINT                       COMMENT 'Внешний ключ. Служит для установления связи с таблицей Organization',
   FOREIGN KEY (org_id) REFERENCES Organization(id)
 );
+COMMENT ON TABLE Office IS 'Таблица офисов';
 
--- Таблица справочника Тип документа
+
 CREATE TABLE IF NOT EXISTS doc_type (
-  id          BIGINT PRIMARY KEY AUTO_INCREMENT,  --Первичный ключ. Служит для связи с таблицей document
-  code        VARCHAR(2) NOT NULL,  --Двузначный цифровой код документа
-  name        VARCHAR(50) NOT NULL  --Наименование документа
+  id          BIGINT                        COMMENT 'Уникальный идентификатор' PRIMARY KEY AUTO_INCREMENT,
+  code        VARCHAR(2) NOT NULL           COMMENT 'Двузначный цифровой код документа',
+  name        VARCHAR(50) NOT NULL          COMMENT 'Наименование документа'
 );
+COMMENT ON TABLE doc_type IS 'Таблица справочника Тип документа';
 
--- Таблица документов работника (User)
+
 CREATE TABLE IF NOT EXISTS document (
-  id          BIGINT PRIMARY KEY AUTO_INCREMENT,  --Первичный ключ. Служит для связи с таблицей User
-  doc_type_id BIGINT NOT NULL,  --Внешний ключ. Служит для установления связи с таблицей doc_type
+  id          BIGINT                        COMMENT 'Уникальный идентификатор' PRIMARY KEY AUTO_INCREMENT,
+  doc_type_id BIGINT NOT NULL               COMMENT 'Внешний ключ. Служит для установления связи с таблицей doc_type',
   FOREIGN KEY (doc_type_id) REFERENCES doc_type(id),
-  doc_number  VARCHAR(20) NOT NULL, --Номер документа
-  doc_date    DATE NOT NULL --Дата документа
+  doc_number  VARCHAR(20) NOT NULL          COMMENT 'Номер документа',
+  doc_date    DATE NOT NULL                 COMMENT 'Дата документа'
 );
+COMMENT ON TABLE document IS 'Таблица документов работника (User)';
 
--- Таблица работников
+
 CREATE TABLE IF NOT EXISTS User (
-  id            BIGINT PRIMARY KEY AUTO_INCREMENT,  --Первичный ключ
-  first_name    VARCHAR(50) NOT NULL, --Имя Работника
-  second_name   VARCHAR(50),  --Фамилия работника
-  middle_name   VARCHAR(50),  --Отчество работника
-  position      VARCHAR(50) NOT NULL, --Должность раюотника
-  phone         VARCHAR(20),  --Телефон работника
-  doc_id        BIGINT, --Внешний ключ. Слудит для установления связи с таблицей document
+  id            BIGINT                                  COMMENT 'Уникальный идентификатор' PRIMARY KEY AUTO_INCREMENT,
+  first_name    VARCHAR(50) NOT NULL                    COMMENT 'Имя Работника',
+  second_name   VARCHAR(50)                             COMMENT 'Фамилия работника',
+  middle_name   VARCHAR(50)                             COMMENT 'Отчество работника',
+  position      VARCHAR(50) NOT NULL                    COMMENT 'Должность раюотника',
+  phone         VARCHAR(20)                             COMMENT 'Телефон работника',
+  doc_id        BIGINT                                  COMMENT 'Внешний ключ. Слудит для установления связи с таблицей document',
   FOREIGN KEY (doc_id) REFERENCES document(id),
-  citizenship_id BIGINT,  --Внешник ключ. Служит для установления связи с таблицей country
+  citizenship_id BIGINT                                 COMMENT 'Внешний ключ. Служит для установления связи с таблицей country',
   FOREIGN KEY (citizenship_id) REFERENCES country(id),
-  is_identified BOOLEAN,  --Параметр, отображающий идентификацию работника
-  office_id     BIGINT, --Внешник ключ. Служит для установления связи с таблицей Office
+  is_identified BOOLEAN                                 COMMENT 'Идентификация работника',
+  office_id     BIGINT                                  COMMENT 'Внешний ключ. Служит для установления связи с таблицей Office',
   FOREIGN KEY (office_id) REFERENCES Office(id)
 );
+COMMENT ON TABLE User IS 'Таблица работников';
+
 
 CREATE INDEX UX_Organization_id ON organization (id);
 CREATE INDEX UX_Office_id ON office (id);
