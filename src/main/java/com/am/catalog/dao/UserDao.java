@@ -16,10 +16,11 @@ public interface UserDao {
      */
     void saveUser(User user);
 
+
     /**
      * Обновить поля существующего работника
-     *
      * @param user User-объект
+     * @param id id обновляемого работника
      */
     void updateUser(User user, Long id);
 

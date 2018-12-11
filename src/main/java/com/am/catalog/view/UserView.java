@@ -91,8 +91,9 @@ public class UserView {
      * Идентификация
      */
     private Boolean isIdentified;
-    @Positive(message = "Office Id должен быть больше нуля")
-    @NotNull(message = "Поле Office Id не может быть пустым")
+
+//    @Positive(message = "Office Id должен быть больше нуля")
+//    @NotNull(message = "Поле Office Id не может быть пустым")
     private Long officeId;
 
     /**

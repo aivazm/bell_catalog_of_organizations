@@ -53,7 +53,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public void updateUser(User user, Long id) {
         if (em.find(User.class, id) != null) {
-            Document oldDocument = em.find(User.class, user.getId()).getDocument();
+            Document oldDocument = em.find(User.class, id).getDocument();
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaUpdate<User> update = cb.createCriteriaUpdate(User.class);
             Root<User> root = update.from(User.class);

@@ -31,7 +31,7 @@ public class OfficeController {
     /**
      * Добавить новый офис
      *
-     * @param officeView JSON-объект с обязательными параметрами id, address
+     * @param officeView JSON-объект с обязательными параметрами name, address, orgId
      * @return Объект OfficeView (result: "success") - результат работы метода officeService.saveOffice(officeView);
      * @see OfficeService#saveOffice(OfficeView)
      */
@@ -55,14 +55,13 @@ public class OfficeController {
     /**
      * Получить List офисов, соответствующих параметрам
      *
-     * @param orgId      Обязательный параметр id организации.
-     * @param officeView JSON-объект OfficeView (name, phone, isActive)
+     * @param officeView JSON-объект OfficeView с обязательным параметром orgId (name, phone, isActive)
      * @return List объектов OfficeView (id, name, isActive) - результат работы метода officeService.getOfficeList(orgId, name, phone, isActive);
-     * @see OfficeService#getOfficeList(Long orgId, OfficeView officeView)
+     * @see OfficeService#getOfficeList(OfficeView officeView)
      */
-    @PostMapping(value = "/list/{orgId}")
-    public List<OfficeView> getListOffices(@PathVariable Long orgId, @RequestBody OfficeView officeView) {
-        return officeService.getOfficeList(orgId, officeView);
+    @PostMapping(value = "/list")
+    public List<OfficeView> getListOffices(@RequestBody OfficeView officeView) {
+        return officeService.getOfficeList(officeView);
     }
 
     /**

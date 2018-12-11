@@ -1,8 +1,7 @@
 package com.am.catalog.controller;
 
 import com.am.catalog.view.ErrorResponse;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.am.catalog.view.Wrapper;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -33,17 +32,7 @@ public class ResponseWrapperController implements ResponseBodyAdvice<Object> {
         if (body instanceof ErrorResponse) {
             return body;
         }
-        return new Wrapper<>(body);
-    }
-
-    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-    @JsonSerialize
-    private class Wrapper<T> {
-        private final Object data;
-
-        Wrapper(Object data) {
-            this.data = data;
-        }
+        return new Wrapper(body);
     }
 }
 

@@ -37,9 +37,8 @@ public interface OfficeService {
     /**
      * Получить List офисов, соответствующих параметрам
      *
-     * @param orgId      обязательный параметр. Id организации;
-     * @param officeView OfficeView-объект с возможными параметрами (name, phone, isActive);
+     * @param officeView OfficeView-объект с обязательным параметром orgId, возможными параметрами (name, phone, isActive);
      * @return List объектов OfficeView (id, name, isActive);
      */
-    List<OfficeView> getOfficeList(Long orgId, OfficeView officeView);
+    List<OfficeView> getOfficeList(OfficeView officeView);
 }

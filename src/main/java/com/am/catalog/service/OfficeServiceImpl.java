@@ -136,11 +136,11 @@ public class OfficeServiceImpl implements OfficeService {
      * {@inheritDoc}
      */
     @Override
-    public List<OfficeView> getOfficeList(Long orgId, OfficeView officeView) {
-        if (orgId < 1) {
+    public List<OfficeView> getOfficeList(OfficeView officeView) {
+        if (officeView.getOrgId() == null || officeView.getOrgId() < 1) {
             throw new EmptyFieldException("OrgId cannot be empty or less than one");
         }
-        Organization org = organizationDao.getOrganizationById(orgId);
+        Organization org = organizationDao.getOrganizationById(officeView.getOrgId());
         if (org != null) {
             List<Office> offices = officeDao.getOfficeList(org,
                     officeView.getName(),

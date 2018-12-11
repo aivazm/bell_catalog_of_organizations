@@ -46,11 +46,15 @@ public class UserServiceImpl implements UserService {
     public UserView saveUser(UserView userView) {
         message = new StringBuilder();
         User user = getCrudeUser(userView);
-        Office office = officeDao.getOfficeById(userView.getOfficeId());
-        if (office != null) {
-            user.setOffice(office);
+        if (userView.getOfficeId() != null) {
+            Office office = officeDao.getOfficeById(userView.getOfficeId());
+            if (office != null) {
+                user.setOffice(office);
+            } else {
+                message.append("Офис с указанным id отсутствует");
+            }
         } else {
-            message.append("Офис с указанным id отсутствует");
+            message.append("Поле officeId не может быть пустым");
         }
         String code = userView.getDocCode();
         String name = userView.getDocName();
@@ -119,7 +123,8 @@ public class UserServiceImpl implements UserService {
             user.setIdentified(userView.isIdentified());
         }
         if (message.length() == 0) {
-            userDao.updateUser(user, userView.getId());
+            Long id = userView.getId();
+            userDao.updateUser(user, id);
             return new UserView("success");
         } else {
             throw new EmptyFieldException(message.toString().trim());

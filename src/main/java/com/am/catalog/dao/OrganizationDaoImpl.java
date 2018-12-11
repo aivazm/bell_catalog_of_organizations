@@ -35,15 +35,8 @@ public class OrganizationDaoImpl implements OrganizationDao {
      */
     @Override
     public void saveOrganization(Organization org) {
-        final String FIND_BY_INN_QUERY = "SELECT o FROM Organization o WHERE o.inn = :inn";
-        TypedQuery<Organization> query = em.createQuery(FIND_BY_INN_QUERY, Organization.class);
-        query.setParameter("inn", org.getInn());
-        List<Organization> orgList = query.getResultList();
-        if (!orgList.isEmpty()) {
-            throw new NotUniqueException("Организация с ИНН " + org.getInn() + " уже существует");
-        } else {
-            em.persist(org);
-        }
+        checkUniqueInn(org);
+        em.persist(org);
     }
 
     /**
@@ -53,6 +46,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
     public void updateOrganization(Organization org, Long id) {
         Organization o = em.find(Organization.class, id);
         if (o != null) {
+            checkUniqueInn(org);
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaUpdate<Organization> update = cb.createCriteriaUpdate(Organization.class);
             Root<Organization> root = update.from(Organization.class);
@@ -109,5 +103,15 @@ public class OrganizationDaoImpl implements OrganizationDao {
             throw new NoObjectException("Организации, удовлетворяющие параметрам, отсутствуют");
         }
         return organizations;
+    }
+
+    private void checkUniqueInn(Organization org){
+        final String FIND_BY_INN_QUERY = "SELECT o FROM Organization o WHERE o.inn = :inn";
+        TypedQuery<Organization> query = em.createQuery(FIND_BY_INN_QUERY, Organization.class);
+        query.setParameter("inn", org.getInn());
+        List<Organization> orgList = query.getResultList();
+        if (!orgList.isEmpty()) {
+            throw new NotUniqueException("Организация с ИНН " + org.getInn() + " уже существует");
+        }
     }
 }
