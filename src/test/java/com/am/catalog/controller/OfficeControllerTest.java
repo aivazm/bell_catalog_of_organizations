@@ -51,7 +51,6 @@ public class OfficeControllerTest {
     @Test
     public void saveOfficeEmptyFieldsTest() throws Exception {
         OfficeView office = new OfficeView();
-        office.setName("Слоновая кость");
         office.setAddress("Башня");
 
         Object errorResponse = restTemplate.postForObject(
@@ -59,7 +58,7 @@ public class OfficeControllerTest {
                 office,
                 Object.class);
         HashMap errors = (HashMap) errorResponse;
-        assertThat(errors.get("error"), is("OrgId cannot be empty;"));
+        assertThat(errors.get("error"), is("OrgId cannot be empty; Наименование офиса не может быть пустым;"));
     }
 
     /**

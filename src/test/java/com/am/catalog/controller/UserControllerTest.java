@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,8 +34,18 @@ public class UserControllerTest {
     public void saveUserPositiveTest(){
         UserView user = new UserView();
         user.setFirstName("Владимир");
+        user.setSecondName("Ерофеев");
+        user.setMiddleName("Александрович");
         user.setPosition("Селекционер");
+        user.setPhone("551-551");
+        user.setDocCode("21");
+        user.setDocName("Паспорт");
+        user.setDocNumber("1234 123459");
+        user.setDocDate(new Date(2010-02-20));
+        user.setCitizenshipCode("643");
+        user.setIdentified(true);
         user.setOfficeId(1L);
+
         Wrapper wrapper = restTemplate.postForObject(
                 "http://localhost:" + port + "/user/save",
                 user,
@@ -86,8 +97,19 @@ public class UserControllerTest {
     public void updateUserPositiveTest(){
         UserView user = new UserView();
         user.setId(8L);
-        user.setFirstName("Владимир");
-        user.setPosition("Селекционер");
+        user.setFirstName("Илья");
+        user.setSecondName("Кузнецов");
+        user.setMiddleName("Кузьмич");
+        user.setPosition("Рабочий");
+        user.setPhone("222-333");
+        user.setDocCode("21");
+        user.setDocName("Паспорт");
+        user.setDocNumber("1222 123459");
+        user.setDocDate(new Date(2010-02-10));
+        user.setCitizenshipCode("643");
+        user.setIdentified(true);
+        user.setOfficeId(2L);
+
 
         Wrapper wrapper = restTemplate.postForObject(
                 "http://localhost:" + port + "/user/update",
@@ -136,16 +158,22 @@ public class UserControllerTest {
     @Test
     public void getListUsersPositiveTest() throws Exception {
         UserView user = new UserView();
-        user.setOfficeId(1L);
-        user.setFirstName("Роман");
+        user.setOfficeId(2L);
+        user.setFirstName("Петр");
+        user.setSecondName("Романов");
+        user.setMiddleName("Иванович");
+        user.setPosition("Механик");
+        user.setDocCode("07");
+        user.setCitizenshipCode("104");
+
         Wrapper wrapper = restTemplate.postForObject(
                 "http://localhost:" + port + "/user/list", user, Wrapper.class);
         List<HashMap> view = (List) wrapper.getData();
-        assertThat(view.get(0).get("id"), is(1));
-        assertThat(view.get(0).get("firstName"), is("Роман"));
-        assertThat(view.get(0).get("secondName"), is("Иванов"));
-        assertThat(view.get(0).get("middleName"), is("Петрович"));
-        assertThat(view.get(0).get("position"), is("Агроном"));
+        assertThat(view.get(0).get("id"), is(3));
+        assertThat(view.get(0).get("firstName"), is("Петр"));
+        assertThat(view.get(0).get("secondName"), is("Романов"));
+        assertThat(view.get(0).get("middleName"), is("Иванович"));
+        assertThat(view.get(0).get("position"), is("Механик"));
     }
 
     /**

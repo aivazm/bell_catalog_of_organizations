@@ -86,8 +86,17 @@ public class OrganizationControllerITest {
                 "http://localhost:" + port + "/organization/save",
                 organization,
                 Wrapper.class);
+
         HashMap view = (HashMap) wrapper.getData();
         assertThat(view.get("result"), is("success"));
+
+        Wrapper wrapper2 = restTemplate.getForObject(
+                "http://localhost:" + port + "/organization/{id}",
+                Wrapper.class,
+                3L);
+        HashMap view2 = (HashMap) wrapper2.getData();
+        assertThat(view2.get("id"), is(3));
+        assertThat(view2.get("name"), is("Родо"));
     }
 
     /**
