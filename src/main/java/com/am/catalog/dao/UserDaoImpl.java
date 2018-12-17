@@ -146,7 +146,7 @@ public class UserDaoImpl implements UserDao {
         criteriaQuery.select(root).where(predicates.toArray(new Predicate[]{}));
 
         List<User> tempUserList = em.createQuery(criteriaQuery).getResultList();
-        if (tempUserList.isEmpty()) {
+        if (tempUserList == null || tempUserList.isEmpty()) {
             throw new NoObjectException("Работники, удовлетворяющие параметрам, отсутствуют");
         }
         if (docCode == null || docCode.isEmpty()) {
@@ -179,7 +179,7 @@ public class UserDaoImpl implements UserDao {
             queryDocType.setParameter("name", document.getDocType().getName());
         }
         List<DocType> docTypeList = queryDocType.getResultList();
-        if (docTypeList.isEmpty()) {
+        if (docTypeList != null && docTypeList.isEmpty()) {
             throw new NoObjectException("По указанным параметрам тип документа не установлен;");
         } else {
             docType = docTypeList.get(0);
@@ -189,7 +189,7 @@ public class UserDaoImpl implements UserDao {
         queryDoc.setParameter("docType", docType);
         queryDoc.setParameter("number", document.getNumber());
         List<Document> documentList = queryDoc.getResultList();
-        if (!documentList.isEmpty()) {
+        if (documentList != null && !documentList.isEmpty()) {
             throw new NotUniqueException("Работник с указанным документом уже существует; ");
         }
         Document checkedDocument = new Document(docType, document.getNumber(), document.getDate());
@@ -203,7 +203,7 @@ public class UserDaoImpl implements UserDao {
         TypedQuery<Country> query = em.createQuery(FIND_COUNTRY_QUERY, Country.class);
         query.setParameter("code", country.getCode());
         List<Country> countryList = query.getResultList();
-        if (countryList.isEmpty()) {
+        if (countryList == null || countryList.isEmpty()) {
             throw new NoObjectException("По указаному коду государство не установлено; ");
         }
         return countryList.get(0);

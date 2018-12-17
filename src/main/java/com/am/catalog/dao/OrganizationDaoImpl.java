@@ -99,7 +99,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
                 .where(predicates.toArray(new Predicate[]{}));
 
         List<Organization> organizations = em.createQuery(criteriaQuery).getResultList();
-        if (organizations.isEmpty()) {
+        if (organizations == null || organizations.isEmpty()) {
             throw new NoObjectException("Организации, удовлетворяющие параметрам, отсутствуют");
         }
         return organizations;
@@ -110,7 +110,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
         TypedQuery<Organization> query = em.createQuery(FIND_BY_INN_QUERY, Organization.class);
         query.setParameter("inn", org.getInn());
         List<Organization> orgList = query.getResultList();
-        if (!orgList.isEmpty()) {
+        if (orgList != null && !orgList.isEmpty()) {
             throw new NotUniqueException("Организация с ИНН " + org.getInn() + " уже существует");
         }
     }

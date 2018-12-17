@@ -1,11 +1,9 @@
 package com.am.catalog.controller;
 
-import com.am.catalog.model.Organization;
 import com.am.catalog.view.ErrorResponse;
 import com.am.catalog.view.OrganizationView;
 import com.am.catalog.view.SuccessResponse;
 import com.am.catalog.view.Wrapper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class OrganizationControllerITest {
     @Test
     @DirtiesContext(methodMode = AFTER_METHOD)
     public void getOrganizationByIdPositiveTest() {
-        Organization organization = new Organization();
+        OrganizationView organization = new OrganizationView();
         organization.setName("Проверка");
         organization.setFullName("ООО Проверка");
         organization.setInn("0123456789");
@@ -58,8 +59,20 @@ public class OrganizationControllerITest {
         organization.setActive(true);
         restTemplate.postForLocation(url + "save", organization);
 
-        Wrapper wrapper = restTemplate.getForObject(url + "{id}", Wrapper.class, 3L);
-        OrganizationView view = new ObjectMapper().convertValue(wrapper.getData(), OrganizationView.class);
+        ParameterizedTypeReference<Wrapper<OrganizationView>> parameterizedTypeReference =
+                new ParameterizedTypeReference<Wrapper<OrganizationView>>() {
+                };
+        ResponseEntity<Wrapper<OrganizationView>> exchange = restTemplate.exchange(
+                url + "{id}",
+                HttpMethod.GET,
+                null,
+                parameterizedTypeReference,
+                3L
+        );
+        Wrapper<OrganizationView> wrapper = exchange.getBody();
+        assert wrapper != null;
+        OrganizationView view = wrapper.getData();
+
         Assert.assertNotNull(view);
         assertThat(view.getId(), is(3L));
         assertThat(view.getName(), is("Проверка"));
@@ -76,11 +89,16 @@ public class OrganizationControllerITest {
      */
     @Test
     public void getOrganizationByIdNoOrganizationTest() {
-        Object error = restTemplate.getForObject(
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
                 url + "{id}",
-                Object.class,
+                HttpMethod.GET,
+                null,
+                parameterizedTypeReference,
                 3L);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Нет организации с id: 3"));
     }
@@ -90,11 +108,16 @@ public class OrganizationControllerITest {
      */
     @Test
     public void getOrganizationByIdInternalServerErrorTest() {
-        Object error = restTemplate.getForObject(
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
                 url + "{id}",
-                Object.class,
-                "w");
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+                HttpMethod.GET,
+                null,
+                parameterizedTypeReference,
+                "String");
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Ошибка на сервере"));
     }
@@ -112,11 +135,20 @@ public class OrganizationControllerITest {
         organizationView.setKpp("012345678");
         organizationView.setAddress("1");
 
-        Wrapper wrapper = restTemplate.postForObject(
+        ParameterizedTypeReference<Wrapper<SuccessResponse>> parameterizedTypeReference =
+                new ParameterizedTypeReference<Wrapper<SuccessResponse>>() {
+                };
+
+        HttpEntity<OrganizationView> requestEntity = new HttpEntity<>(organizationView);
+        ResponseEntity<Wrapper<SuccessResponse>> exchange = restTemplate.exchange(
                 url + "save",
-                organizationView,
-                Wrapper.class);
-        SuccessResponse successResponse = new ObjectMapper().convertValue(wrapper.getData(), SuccessResponse.class);
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        Wrapper<SuccessResponse> wrapper = exchange.getBody();
+        assert wrapper != null;
+        SuccessResponse successResponse = wrapper.getData();
         Assert.assertNotNull(successResponse);
         assertThat(successResponse.getResult(), is("success"));
     }
@@ -132,11 +164,18 @@ public class OrganizationControllerITest {
         organization.setKpp("012345678");
         organization.setAddress("1");
 
-        Object error = restTemplate.postForObject(
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        HttpEntity<OrganizationView> requestEntity = new HttpEntity<>(organization);
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
                 url + "save",
-                organization,
-                Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("ИНН не может быть пустым;"));
     }
@@ -146,11 +185,17 @@ public class OrganizationControllerITest {
      */
     @Test
     public void saveOrganizationInternalServerErrorTest() {
-        Object error = restTemplate.postForObject(
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
                 url + "save",
-                "organization",
-                Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+                HttpMethod.POST,
+                null,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Ошибка на сервере"));
     }
@@ -178,12 +223,21 @@ public class OrganizationControllerITest {
         organizationForUpdate.setInn("9876543210");
         organizationForUpdate.setKpp("012345678");
         organizationForUpdate.setAddress("1");
-        Wrapper wrapper = restTemplate.postForObject(
-                url + "update",
-                organizationForUpdate,
-                Wrapper.class);
 
-        SuccessResponse successResponse = new ObjectMapper().convertValue(wrapper.getData(), SuccessResponse.class);
+        ParameterizedTypeReference<Wrapper<SuccessResponse>> parameterizedTypeReference =
+                new ParameterizedTypeReference<Wrapper<SuccessResponse>>() {
+                };
+
+        HttpEntity<OrganizationView> requestEntity = new HttpEntity<>(organizationForUpdate);
+        ResponseEntity<Wrapper<SuccessResponse>> exchange = restTemplate.exchange(
+                url + "update",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        Wrapper<SuccessResponse> wrapper = exchange.getBody();
+        assert wrapper != null;
+        SuccessResponse successResponse = wrapper.getData();
         Assert.assertNotNull(successResponse);
         assertThat(successResponse.getResult(), is("success"));
     }
@@ -210,11 +264,19 @@ public class OrganizationControllerITest {
         organizationForUpdate.setInn("6666666666");
         organizationForUpdate.setKpp("012345678");
         organizationForUpdate.setAddress("1");
-        Object error = restTemplate.postForObject(
+
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        HttpEntity<OrganizationView> requestEntity = new HttpEntity<>(organizationForUpdate);
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
                 url + "update",
-                organizationForUpdate,
-                Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Организация с ИНН 6666666666 уже существует"));
     }
@@ -224,11 +286,17 @@ public class OrganizationControllerITest {
      */
     @Test
     public void updateOrganizationInternalServerErrorTest() {
-        Object error = restTemplate.postForObject(
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
                 url + "update",
-                "organization",
-                Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+                HttpMethod.POST,
+                null,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Ошибка на сервере"));
     }
@@ -245,8 +313,6 @@ public class OrganizationControllerITest {
         organizationForSaveFirst.setInn("0000000001");
         organizationForSaveFirst.setKpp("012345678");
         organizationForSaveFirst.setAddress("Адрес");
-        organizationForSaveFirst.setPhone("123456789");
-        organizationForSaveFirst.setActive(true);
 
         OrganizationView organizationForSaveSecond = new OrganizationView();
         organizationForSaveSecond.setName("Проверка");
@@ -254,22 +320,29 @@ public class OrganizationControllerITest {
         organizationForSaveSecond.setInn("0000000002");
         organizationForSaveSecond.setKpp("012345678");
         organizationForSaveSecond.setAddress("Адрес");
-        organizationForSaveSecond.setPhone("123456789");
-        organizationForSaveSecond.setActive(true);
 
         restTemplate.postForLocation(url + "save", organizationForSaveFirst);
         restTemplate.postForLocation(url + "save", organizationForSaveSecond);
 
         OrganizationView organization = new OrganizationView();
         organization.setName("Проверка");
-        Wrapper wrapper = restTemplate.postForObject(
-                url + "list",
-                organization,
-                Wrapper.class);
 
-        List viewList = (List) wrapper.getData();
+        ParameterizedTypeReference<Wrapper<List<OrganizationView>>> parameterizedTypeReference =
+                new ParameterizedTypeReference<Wrapper<List<OrganizationView>>>() {
+                };
+
+        HttpEntity<OrganizationView> requestEntity = new HttpEntity<>(organization);
+        ResponseEntity<Wrapper<List<OrganizationView>>> exchange = restTemplate.exchange(
+                url + "list",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        Wrapper<List<OrganizationView>> wrapper = exchange.getBody();
+        assert wrapper != null;
+        List<OrganizationView> viewList = wrapper.getData();
         Assert.assertNotNull(viewList);
-        OrganizationView view = new ObjectMapper().convertValue(viewList.get(0), OrganizationView.class);
+        OrganizationView view = viewList.get(0);
         assertThat(viewList.size(), is(2));
         assertThat(view.getName(), is("Проверка"));
     }
@@ -282,11 +355,18 @@ public class OrganizationControllerITest {
         OrganizationView organization = new OrganizationView();
         organization.setName("Пион");
 
-        Object error = restTemplate.postForObject(
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        HttpEntity<OrganizationView> requestEntity = new HttpEntity<>(organization);
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
                 url + "list",
-                organization,
-                Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Организации, удовлетворяющие параметрам, отсутствуют"));
     }
@@ -297,11 +377,19 @@ public class OrganizationControllerITest {
     @Test
     public void getListOrganizationsEmptyFieldsTest() {
         OrganizationView organization = new OrganizationView();
-        Object error = restTemplate.postForObject(
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        HttpEntity<OrganizationView> requestEntity = new HttpEntity<>(organization);
+
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
                 url + "list",
-                organization,
-                Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Name cannot be empty"));
     }

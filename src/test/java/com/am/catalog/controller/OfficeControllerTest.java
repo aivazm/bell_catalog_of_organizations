@@ -4,7 +4,6 @@ import com.am.catalog.view.ErrorResponse;
 import com.am.catalog.view.OfficeView;
 import com.am.catalog.view.SuccessResponse;
 import com.am.catalog.view.Wrapper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -49,8 +52,20 @@ public class OfficeControllerTest {
         office.setName("Слоновая кость");
         office.setAddress("Башня");
         office.setOrgId(1L);
-        Wrapper wrapper = restTemplate.postForObject(url + "save", office, Wrapper.class);
-        SuccessResponse successResponse = new ObjectMapper().convertValue(wrapper.getData(), SuccessResponse.class);
+        ParameterizedTypeReference<Wrapper<SuccessResponse>> parameterizedTypeReference =
+                new ParameterizedTypeReference<Wrapper<SuccessResponse>>() {
+                };
+
+        HttpEntity<OfficeView> requestEntity = new HttpEntity<>(office);
+        ResponseEntity<Wrapper<SuccessResponse>> exchange = restTemplate.exchange(
+                url + "save",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        Wrapper<SuccessResponse> wrapper = exchange.getBody();
+        assert wrapper != null;
+        SuccessResponse successResponse = wrapper.getData();
         Assert.assertNotNull(successResponse);
         assertThat(successResponse.getResult(), is("success"));
     }
@@ -62,8 +77,18 @@ public class OfficeControllerTest {
     public void saveOfficeEmptyFieldsTest() {
         OfficeView office = new OfficeView();
         office.setAddress("Башня");
-        Object error = restTemplate.postForObject(url + "save", office, Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        HttpEntity<OfficeView> requestEntity = new HttpEntity<>(office);
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "save",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("OrgId cannot be empty; Наименование офиса не может быть пустым;"));
     }
@@ -77,8 +102,18 @@ public class OfficeControllerTest {
         office.setName("На Ромашковой");
         office.setAddress("Башня");
         office.setOrgId(1L);
-        Object error = restTemplate.postForObject(url + "save", office, Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        HttpEntity<OfficeView> requestEntity = new HttpEntity<>(office);
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "save",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("В организации с id 1 офис с именем На Ромашковой уже существует"));
     }
@@ -100,8 +135,20 @@ public class OfficeControllerTest {
         officeForUpdate.setName("Слоновая кость");
         officeForUpdate.setAddress("Башня");
         officeForUpdate.setOrgId(2L);
-        Wrapper wrapper = restTemplate.postForObject(url + "update", officeForUpdate, Wrapper.class);
-        SuccessResponse successResponse = new ObjectMapper().convertValue(wrapper.getData(), SuccessResponse.class);
+        ParameterizedTypeReference<Wrapper<SuccessResponse>> parameterizedTypeReference =
+                new ParameterizedTypeReference<Wrapper<SuccessResponse>>() {
+                };
+
+        HttpEntity<OfficeView> requestEntity = new HttpEntity<>(officeForUpdate);
+        ResponseEntity<Wrapper<SuccessResponse>> exchange = restTemplate.exchange(
+                url + "update",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        Wrapper<SuccessResponse> wrapper = exchange.getBody();
+        assert wrapper != null;
+        SuccessResponse successResponse = wrapper.getData();
         Assert.assertNotNull(successResponse);
         assertThat(successResponse.getResult(), is("success"));
     }
@@ -116,8 +163,18 @@ public class OfficeControllerTest {
         office.setName("Слоновая кость");
         office.setAddress("Башня");
         office.setOrgId(3L);
-        Object error = restTemplate.postForObject(url + "update", office, Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        HttpEntity<OfficeView> requestEntity = new HttpEntity<>(office);
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "update",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Нет организации с id: 3"));
     }
@@ -127,10 +184,24 @@ public class OfficeControllerTest {
      */
     @Test
     public void updateOfficeInternalServerErrorTest() {
-        Object error = restTemplate.postForObject(url + "update", "office", Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        OfficeView office = new OfficeView();
+        office.setName("Нью офис");
+        office.setAddress("Столик на фудкорте");
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        HttpEntity<OfficeView> requestEntity = new HttpEntity<>(office);
+
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "update",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
-        assertThat(errorResponse.getError(), is("Ошибка на сервере"));
+        assertThat(errorResponse.getError(), is("id cannot be empty;"));
     }
 
     /**
@@ -154,10 +225,22 @@ public class OfficeControllerTest {
 
         OfficeView office = new OfficeView();
         office.setOrgId(1L);
-        Wrapper wrapper = restTemplate.postForObject(url + "list", office, Wrapper.class);
-        List viewList = (List) wrapper.getData();
+        ParameterizedTypeReference<Wrapper<List<OfficeView>>> parameterizedTypeReference =
+                new ParameterizedTypeReference<Wrapper<List<OfficeView>>>() {
+                };
+
+        HttpEntity<OfficeView> requestEntity = new HttpEntity<>(office);
+        ResponseEntity<Wrapper<List<OfficeView>>> exchange = restTemplate.exchange(
+                url + "list",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        Wrapper<List<OfficeView>> wrapper = exchange.getBody();
+        assert wrapper != null;
+        List<OfficeView> viewList = wrapper.getData();
         Assert.assertNotNull(viewList);
-        OfficeView view = new ObjectMapper().convertValue(viewList.get(2), OfficeView.class);
+        OfficeView view = viewList.get(2);
         assertThat(viewList.size(), is(4));
         assertThat(view.getName(), is("Первый офис"));
     }
@@ -170,8 +253,18 @@ public class OfficeControllerTest {
         OfficeView office = new OfficeView();
         office.setOrgId(2L);
         office.setName("На дне");
-        Object error = restTemplate.postForObject(url + "list", office, Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        HttpEntity<OfficeView> requestEntity = new HttpEntity<>(office);
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "list",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Офисы, удовлетворяющие параметрам, отсутствуют"));
     }
@@ -181,8 +274,17 @@ public class OfficeControllerTest {
      */
     @Test
     public void getListOfficesInternalServerErrorTest() {
-        Object error = restTemplate.postForObject(url + "list", "office", Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "list",
+                HttpMethod.POST,
+                null,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Ошибка на сервере"));
     }
@@ -201,8 +303,19 @@ public class OfficeControllerTest {
         officeForSave.setOrgId(1L);
         restTemplate.postForObject(url + "save", officeForSave, Wrapper.class);
 
-        Wrapper wrapper = restTemplate.getForObject(url + "{id}", Wrapper.class, 5L);
-        OfficeView view = new ObjectMapper().convertValue(wrapper.getData(), OfficeView.class);
+        ParameterizedTypeReference<Wrapper<OfficeView>> parameterizedTypeReference =
+                new ParameterizedTypeReference<Wrapper<OfficeView>>() {
+                };
+        ResponseEntity<Wrapper<OfficeView>> exchange = restTemplate.exchange(
+                url + "{id}",
+                HttpMethod.GET,
+                null,
+                parameterizedTypeReference,
+                5L
+        );
+        Wrapper<OfficeView> wrapper = exchange.getBody();
+        assert wrapper != null;
+        OfficeView view = wrapper.getData();
         Assert.assertNotNull(view);
         assertThat(view.getId(), is(5L));
         assertThat(view.getName(), is("Проверка"));
@@ -216,8 +329,16 @@ public class OfficeControllerTest {
      */
     @Test
     public void getOfficeByIdNoOfficeTest() {
-        Object error = restTemplate.getForObject(url + "{id}", Object.class, 5L);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "{id}",
+                HttpMethod.GET,
+                null,
+                parameterizedTypeReference,
+                5L);
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Нет офиса с id: 5"));
     }
@@ -227,8 +348,16 @@ public class OfficeControllerTest {
      */
     @Test
     public void getOfficeByIdInternalServerErrorTest() {
-        Object error = restTemplate.getForObject(url + "{id}", Object.class, "w");
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "{id}",
+                HttpMethod.GET,
+                null,
+                parameterizedTypeReference,
+                "wrong parameter");
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Ошибка на сервере"));
     }

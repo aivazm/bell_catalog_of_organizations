@@ -103,7 +103,7 @@ public class OfficeDaoImpl implements OfficeDao {
         }
         criteriaQuery.select(root).where(predicates.toArray(new Predicate[]{}));
         List<Office> offices = em.createQuery(criteriaQuery).getResultList();
-        if (offices.isEmpty()) {
+        if (offices == null || offices.isEmpty()) {
             throw new NoObjectException("Офисы, удовлетворяющие параметрам, отсутствуют");
         } else {
             return offices;
@@ -117,7 +117,7 @@ public class OfficeDaoImpl implements OfficeDao {
         query.setParameter("name", officeName);
         query.setParameter("organization", org);
         List<Office> offList = query.getResultList();
-        if (!offList.isEmpty()) {
+        if (offList != null && !offList.isEmpty()) {
             throw new NotUniqueException("В организации с id " + org.getId() + " офис с именем " + officeName + " уже существует");
         }
     }

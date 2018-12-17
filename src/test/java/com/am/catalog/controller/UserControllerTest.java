@@ -13,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -61,8 +65,20 @@ public class UserControllerTest {
         user.setIdentified(true);
         user.setOfficeId(1L);
 
-        Wrapper wrapper = restTemplate.postForObject(url + "save", user, Wrapper.class);
-        SuccessResponse successResponse = new ObjectMapper().convertValue(wrapper.getData(), SuccessResponse.class);
+        ParameterizedTypeReference<Wrapper<SuccessResponse>> parameterizedTypeReference =
+                new ParameterizedTypeReference<Wrapper<SuccessResponse>>() {
+                };
+
+        HttpEntity<UserView> requestEntity = new HttpEntity<>(user);
+        ResponseEntity<Wrapper<SuccessResponse>> exchange = restTemplate.exchange(
+                url + "save",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        Wrapper<SuccessResponse> wrapper = exchange.getBody();
+        assert wrapper != null;
+        SuccessResponse successResponse = wrapper.getData();
         Assert.assertNotNull(successResponse);
         assertThat(successResponse.getResult(), is("success"));
     }
@@ -76,8 +92,18 @@ public class UserControllerTest {
         user.setFirstName("Владимир");
         user.setPosition("Селекционер");
         user.setOfficeId(10L);
-        Object error = restTemplate.postForObject(url + "save", user, Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        HttpEntity<UserView> requestEntity = new HttpEntity<>(user);
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "save",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Нет офиса с id: 10"));
     }
@@ -90,8 +116,18 @@ public class UserControllerTest {
         UserView user = new UserView();
         user.setFirstName("Владимир");
         user.setPosition("Селекционер");
-        Object error = restTemplate.postForObject(url + "save", user, Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        HttpEntity<UserView> requestEntity = new HttpEntity<>(user);
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "save",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Поле officeId не может быть пустым"));
     }
@@ -131,9 +167,20 @@ public class UserControllerTest {
         user.setCitizenshipCode("643");
         user.setIdentified(true);
         user.setOfficeId(2L);
-        Wrapper wrapper = restTemplate.postForObject(url + "update", user, Wrapper.class);
+        ParameterizedTypeReference<Wrapper<SuccessResponse>> parameterizedTypeReference =
+                new ParameterizedTypeReference<Wrapper<SuccessResponse>>() {
+                };
 
-        SuccessResponse successResponse = new ObjectMapper().convertValue(wrapper.getData(), SuccessResponse.class);
+        HttpEntity<UserView> requestEntity = new HttpEntity<>(user);
+        ResponseEntity<Wrapper<SuccessResponse>> exchange = restTemplate.exchange(
+                url + "update",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        Wrapper<SuccessResponse> wrapper = exchange.getBody();
+        assert wrapper != null;
+        SuccessResponse successResponse = wrapper.getData();
         Assert.assertNotNull(successResponse);
         assertThat(successResponse.getResult(), is("success"));
     }
@@ -142,11 +189,28 @@ public class UserControllerTest {
      * Тест метода UserController#updateUser с некорректными параметрами
      */
     @Test
-    public void updateUserInternalServerErrorTest() {
-        Object error = restTemplate.postForObject(url + "update", "user", Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+    public void updateUserInternalUnknownDocumentTest() {
+        UserView user = new UserView();
+        user.setId(8L);
+        user.setFirstName("Илья");
+        user.setPosition("Рабочий");
+        user.setDocName("Справка");
+        user.setDocNumber("1222 123459");
+        user.setDocDate(new Date(2010 - 02 - 10));
+
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+        HttpEntity<UserView> requestEntity = new HttpEntity<>(user);
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "update",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
-        assertThat(errorResponse.getError(), is("Ошибка на сервере"));
+        assertThat(errorResponse.getError(), is("По указанным параметрам тип документа не установлен;"));
     }
 
     /**
@@ -157,8 +221,17 @@ public class UserControllerTest {
         UserView user = new UserView();
         user.setId(7L);
         user.setFirstName("Владимир");
-        Object error = restTemplate.postForObject(url + "update", user, Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+        HttpEntity<UserView> requestEntity = new HttpEntity<>(user);
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "update",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Поле position не может быть пустым;"));
     }
@@ -193,10 +266,22 @@ public class UserControllerTest {
         user.setDocCode("07");
         user.setCitizenshipCode("104");
 
-        Wrapper wrapper = restTemplate.postForObject(url + "list", user, Wrapper.class);
-        List viewList = (List) wrapper.getData();
+        ParameterizedTypeReference<Wrapper<List<UserView>>> parameterizedTypeReference =
+                new ParameterizedTypeReference<Wrapper<List<UserView>>>() {
+                };
+
+        HttpEntity<UserView> requestEntity = new HttpEntity<>(user);
+        ResponseEntity<Wrapper<List<UserView>>> exchange = restTemplate.exchange(
+                url + "list",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        Wrapper<List<UserView>> wrapper = exchange.getBody();
+        assert wrapper != null;
+        List<UserView> viewList = wrapper.getData();
         Assert.assertNotNull(viewList);
-        UserView view = new ObjectMapper().convertValue(viewList.get(0), UserView.class);
+        UserView view = viewList.get(0);
         assertThat(viewList.size(), is(1));
         assertThat(view.getId(), is(9L));
         assertThat(view.getFirstName(), is("Владимир"));
@@ -213,8 +298,18 @@ public class UserControllerTest {
         UserView user = new UserView();
         user.setOfficeId(1L);
         user.setFirstName("Не Роман");
-        Object error = restTemplate.postForObject(url + "list", user, Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        HttpEntity<UserView> requestEntity = new HttpEntity<>(user);
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "list",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Работники, удовлетворяющие параметрам, отсутствуют"));
     }
@@ -226,8 +321,18 @@ public class UserControllerTest {
     public void getListUsersIncorrectOfficeIdTest2() {
         UserView user = new UserView();
         user.setOfficeId(-1L);
-        Object error = restTemplate.postForObject(url + "list", user, Object.class);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        HttpEntity<UserView> requestEntity = new HttpEntity<>(user);
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "list",
+                HttpMethod.POST,
+                requestEntity,
+                parameterizedTypeReference
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Параметр officeId обязателен к заполнению и не может быть меньше единицы"));
     }
@@ -238,20 +343,45 @@ public class UserControllerTest {
     @Test
     @DirtiesContext(methodMode = AFTER_METHOD)
     public void getUserByIdPositiveTest() {
-        Wrapper wrapper = restTemplate.getForObject(url + "{id}", Wrapper.class, 2L);
-        HashMap view = (HashMap) wrapper.getData();
-        assertThat(view.get("id"), is(2));
-        assertThat(view.get("firstName"), is("Иван"));
-        assertThat(view.get("secondName"), is("Петров"));
-        assertThat(view.get("middleName"), is("Романович"));
-        assertThat(view.get("position"), is("Тракторист"));
-        assertThat(view.get("phone"), is("111-01-02"));
-        assertThat(view.get("docName"), is("Военный билет"));
-        assertThat(view.get("docNumber"), is("1201 612345"));
-        assertThat(view.get("docDate"), is("2001-01-14"));
-        assertThat(view.get("citizenshipName"), is("Российская Федерация"));
-        assertThat(view.get("citizenshipCode"), is("643"));
-        assertThat(view.get("identified"), is(true));
+        UserView userForSave = new UserView();
+        userForSave.setFirstName("Владимир");
+        userForSave.setSecondName("Ерофеев");
+        userForSave.setMiddleName("Александрович");
+        userForSave.setPosition("Селекционер");
+        userForSave.setPhone("551-551");
+        userForSave.setDocCode("07");
+        userForSave.setDocName("Военный билет");
+        userForSave.setDocNumber("1234 123459");
+        userForSave.setDocDate(new Date());
+        userForSave.setCitizenshipCode("643");
+        userForSave.setIdentified(true);
+        userForSave.setOfficeId(2L);
+        restTemplate.postForObject(url + "save", userForSave, Wrapper.class);
+
+        ParameterizedTypeReference<Wrapper<UserView>> parameterizedTypeReference =
+                new ParameterizedTypeReference<Wrapper<UserView>>() {
+                };
+        ResponseEntity<Wrapper<UserView>> exchange = restTemplate.exchange(
+                url + "{id}",
+                HttpMethod.GET,
+                null,
+                parameterizedTypeReference,
+                9L
+        );
+        Wrapper<UserView> wrapper = exchange.getBody();
+        assert wrapper != null;
+        UserView view = wrapper.getData();
+        assertThat(view.getId(), is(9L));
+        assertThat(view.getFirstName(), is("Владимир"));
+        assertThat(view.getSecondName(), is("Ерофеев"));
+        assertThat(view.getMiddleName(), is("Александрович"));
+        assertThat(view.getPosition(), is("Селекционер"));
+        assertThat(view.getPhone(), is("551-551"));
+        assertThat(view.getDocName(), is("Военный билет"));
+        assertThat(view.getDocNumber(), is("1234 123459"));
+        assertThat(view.getCitizenshipName(), is("Российская Федерация"));
+        assertThat(view.getCitizenshipCode(), is("643"));
+        assertThat(view.isIdentified(), is(true));
     }
 
     /**
@@ -259,8 +389,18 @@ public class UserControllerTest {
      */
     @Test
     public void getUserByIdNoUserTest() {
-        Object error = restTemplate.getForObject(url + "{id}", Object.class, 9L);
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "{id}",
+                HttpMethod.GET,
+                null,
+                parameterizedTypeReference,
+                9L
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Нет работника с id: 9"));
     }
@@ -270,8 +410,18 @@ public class UserControllerTest {
      */
     @Test
     public void getUserByIdInternalServerErrorTest() {
-        Object error = restTemplate.getForObject(url + "{id}", Object.class, "9L");
-        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        ParameterizedTypeReference<ErrorResponse> parameterizedTypeReference =
+                new ParameterizedTypeReference<ErrorResponse>() {
+                };
+
+        ResponseEntity<ErrorResponse> exchange = restTemplate.exchange(
+                url + "{id}",
+                HttpMethod.GET,
+                null,
+                parameterizedTypeReference,
+                "not number"
+        );
+        ErrorResponse errorResponse = exchange.getBody();
         Assert.assertNotNull(errorResponse);
         assertThat(errorResponse.getError(), is("Ошибка на сервере"));
     }
