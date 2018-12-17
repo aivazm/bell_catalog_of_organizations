@@ -46,11 +46,6 @@ public class OfficeView {
      */
     private Long orgId;
 
-    /**
-     * Поле для вывода сообщения об успешном выполнении запросов /office/save и /office/update
-     */
-    private String result;
-
     public OfficeView() {
     }
 
@@ -80,14 +75,6 @@ public class OfficeView {
         this.id = id;
         this.name = name;
         this.isActive = isActive;
-    }
-
-    /**
-     * Конструктор для вывода сообщения об успешном выполнении запросов /office/save и /office/update
-     * @param result
-     */
-    public OfficeView(String result) {
-        this.result = result;
     }
 
     public Long getId() {
@@ -138,11 +125,4 @@ public class OfficeView {
         this.orgId = orgId;
     }
 
-    public String getResult() {
-        return result;
-    }
-
-    public void setResult(String result) {
-        this.result = result;
-    }
 }

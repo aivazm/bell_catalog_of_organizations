@@ -19,8 +19,10 @@ public interface OrganizationDao {
      * Обновить поля существующей организации
      *
      * @param organization Organization-объект
+     * @param id id обновляемой организации
+     * @return результат Query#executeUpdate()
      */
-    void updateOrganization(Organization organization, Long id);
+    int updateOrganization(Organization organization, Long id);
 
     /**
      * Получить организацию по id

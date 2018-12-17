@@ -1,6 +1,7 @@
 package com.am.catalog.service;
 
 import com.am.catalog.view.OfficeView;
+import com.am.catalog.view.SuccessResponse;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface OfficeService {
      * @param officeView OfficeView-объект с обязательными параметрами id, address
      * @return Объект OfficeView (result: "success");
      */
-    OfficeView saveOffice(OfficeView officeView);
+    SuccessResponse saveOffice(OfficeView officeView);
 
     /**
      * Обновить поля существующего офиса
@@ -24,7 +25,7 @@ public interface OfficeService {
      * @param officeView OfficeView-объект с обязательными параметрами id, name, address
      * @return Объект OfficeView (result: "success");
      */
-    OfficeView updateOffice(OfficeView officeView);
+    SuccessResponse updateOffice(OfficeView officeView);
 
     /**
      * Получить офис по id

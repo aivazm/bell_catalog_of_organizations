@@ -1,6 +1,7 @@
 package com.am.catalog.controller;
 
 import com.am.catalog.service.UserService;
+import com.am.catalog.view.SuccessResponse;
 import com.am.catalog.view.UserView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,7 @@ public class UserController {
      * @see UserService#saveUser(UserView userView);
      */
     @PostMapping("/save")
-    public UserView saveUser(@RequestBody UserView userView) {
+    public SuccessResponse saveUser(@RequestBody UserView userView) {
         return userService.saveUser(userView);
     }
 
@@ -48,7 +49,7 @@ public class UserController {
      * @see UserService#updateUser(UserView userView);
      */
     @PostMapping("/update")
-    public UserView updateUser(@RequestBody UserView userView) {
+    public SuccessResponse updateUser(@RequestBody UserView userView) {
         return userService.updateUser(userView);
     }
 

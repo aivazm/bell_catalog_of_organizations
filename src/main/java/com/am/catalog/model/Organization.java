@@ -34,7 +34,7 @@ public class Organization implements Serializable {
     /**
      * ИНН организации
      */
-    @Column(length = 10, nullable = false, unique = true)
+    @Column(length = 10, nullable = false)
     private String inn;
 
     /**

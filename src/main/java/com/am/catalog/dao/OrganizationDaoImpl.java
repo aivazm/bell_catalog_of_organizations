@@ -43,7 +43,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
      * {@inheritDoc}
      */
     @Override
-    public void updateOrganization(Organization org, Long id) {
+    public int updateOrganization(Organization org, Long id) {
         Organization o = em.find(Organization.class, id);
         if (o != null) {
             checkUniqueInn(org);
@@ -61,7 +61,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
             update.set(root.get("isActive"), org.isActive());
             update.where(root.get("id").in(id));
             Query query = em.createQuery(update);
-            query.executeUpdate();
+            return (query.executeUpdate());
         } else {
             throw new NoObjectException("Нет организации с id: " + id);
         }

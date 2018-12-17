@@ -21,8 +21,9 @@ public interface UserDao {
      * Обновить поля существующего работника
      * @param user User-объект
      * @param id id обновляемого работника
+     * @return результат Query#executeUpdate()
      */
-    void updateUser(User user, Long id);
+    int updateUser(User user, Long id);
 
     /**
      * Получить работника по id

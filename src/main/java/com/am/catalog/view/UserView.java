@@ -96,11 +96,6 @@ public class UserView {
 //    @NotNull(message = "Поле Office Id не может быть пустым")
     private Long officeId;
 
-    /**
-     * Поле для вывода сообщения об успешном выполнении запросов /user/save и /user/update
-     */
-    private String result;
-
     public UserView() {
     }
 
@@ -165,14 +160,6 @@ public class UserView {
         this.citizenshipName = citizenshipName;
         this.citizenshipCode = citizenshipCode;
         this.isIdentified = isIdentified;
-    }
-
-    /**
-     * Конструктор для вывода сообщения об успешном выполнении запросов /user/save и /user/update
-     * @param result
-     */
-    public UserView(String result) {
-        this.result = result;
     }
 
     public Long getId() {
@@ -287,11 +274,4 @@ public class UserView {
         this.officeId = officeId;
     }
 
-    public String getResult() {
-        return result;
-    }
-
-    public void setResult(String result) {
-        this.result = result;
-    }
 }

@@ -26,7 +26,7 @@ public class OfficeDaoImpl implements OfficeDao {
 
     private final EntityManager em;
 
-    @Autowired
+//    @Autowired
     public OfficeDaoImpl(EntityManager em) {
         this.em = em;
     }
@@ -41,7 +41,7 @@ public class OfficeDaoImpl implements OfficeDao {
      * {@inheritDoc}
      */
     @Override
-    public void updateOffice(Office office, Long id) {
+    public int updateOffice(Office office, Long id) {
         Office o = em.find(Office.class, id);
         if (o != null) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -63,7 +63,7 @@ public class OfficeDaoImpl implements OfficeDao {
             }
             update.where(root.get("id").in(id));
             Query query = em.createQuery(update);
-            query.executeUpdate();
+            return query.executeUpdate();
         } else {
             throw new NoObjectException("Нет офиса с id: " + id);
         }

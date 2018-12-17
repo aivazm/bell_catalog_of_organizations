@@ -1,6 +1,7 @@
 package com.am.catalog.service;
 
 import com.am.catalog.view.OrganizationView;
+import com.am.catalog.view.SuccessResponse;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface OrganizationService {
      * @param organizationView OrganizationView-объект с обязательными параметрами name, fullName, inn, kpp, address
      * @return Объект OrganizationView (result: "success");
      */
-    OrganizationView saveOrganization(OrganizationView organizationView);
+    SuccessResponse saveOrganization(OrganizationView organizationView);
 
     /**
      * Обновить поля существующей организации
@@ -24,7 +25,7 @@ public interface OrganizationService {
      * @param organizationView OrganizationView-объект с обязательными параметрами id, name, fullName, inn, kpp, address
      * @return Объект OrganizationView (result: "success");
      */
-    OrganizationView updateOrganization(OrganizationView organizationView);
+    SuccessResponse updateOrganization(OrganizationView organizationView);
 
     /**
      * Получить организацию по id

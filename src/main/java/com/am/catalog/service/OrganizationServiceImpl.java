@@ -2,8 +2,10 @@ package com.am.catalog.service;
 
 import com.am.catalog.dao.OrganizationDao;
 import com.am.catalog.exception.EmptyFieldException;
+import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.model.Organization;
 import com.am.catalog.view.OrganizationView;
+import com.am.catalog.view.SuccessResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,10 +36,10 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     @Override
     @Transactional
-    public OrganizationView saveOrganization(OrganizationView organizationView) {
+    public SuccessResponse saveOrganization(OrganizationView organizationView) {
         Organization organization = getValidOrganization(organizationView);
         dao.saveOrganization(organization);
-        return new OrganizationView("success");
+        return new SuccessResponse("success");
     }
 
     /**
@@ -45,13 +47,16 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     @Override
     @Transactional
-    public OrganizationView updateOrganization(OrganizationView organizationView) {
+    public SuccessResponse updateOrganization(OrganizationView organizationView) {
         if (organizationView.getId() == null) {
             throw new EmptyFieldException("id cannot be empty;");
         }
         Organization organization = getValidOrganization(organizationView);
-        dao.updateOrganization(organization, organizationView.getId());
-        return new OrganizationView("success");
+        if (dao.updateOrganization(organization, organizationView.getId()) > 0) {
+            return new SuccessResponse("success");
+        } else {
+            throw new NoObjectException("Обновление не удалось");
+        }
     }
 
     /**

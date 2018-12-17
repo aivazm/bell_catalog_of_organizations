@@ -1,13 +1,19 @@
 package com.am.catalog.controller;
 
+import com.am.catalog.view.ErrorResponse;
+import com.am.catalog.view.SuccessResponse;
 import com.am.catalog.view.UserView;
 import com.am.catalog.view.Wrapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
@@ -16,6 +22,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.springframework.test.annotation.DirtiesContext.MethodMode.AFTER_METHOD;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -27,11 +34,19 @@ public class UserControllerTest {
     @LocalServerPort
     private int port;
 
+    private static String url;
+
+    @Before
+    public void createUrl() {
+        url = "http://localhost:" + port + "/user/";
+    }
+
     /**
      * Тест метода UserController#saveUser
      */
     @Test
-    public void saveUserPositiveTest(){
+    @DirtiesContext(methodMode = AFTER_METHOD)
+    public void saveUserPositiveTest() {
         UserView user = new UserView();
         user.setFirstName("Владимир");
         user.setSecondName("Ерофеев");
@@ -41,62 +56,69 @@ public class UserControllerTest {
         user.setDocCode("21");
         user.setDocName("Паспорт");
         user.setDocNumber("1234 123459");
-        user.setDocDate(new Date(2010-02-20));
+        user.setDocDate(new Date(2010 - 02 - 20));
         user.setCitizenshipCode("643");
         user.setIdentified(true);
         user.setOfficeId(1L);
 
-        Wrapper wrapper = restTemplate.postForObject(
-                "http://localhost:" + port + "/user/save",
-                user,
-                Wrapper.class);
-        HashMap view = (HashMap) wrapper.getData();
-        assertThat(view.get("result"), is("success"));
+        Wrapper wrapper = restTemplate.postForObject(url + "save", user, Wrapper.class);
+        SuccessResponse successResponse = new ObjectMapper().convertValue(wrapper.getData(), SuccessResponse.class);
+        Assert.assertNotNull(successResponse);
+        assertThat(successResponse.getResult(), is("success"));
     }
 
     /**
      * Тест метода UserController#saveUser с неверными параметрами
-     * @throws Exception
      */
     @Test
-    public void saveUserNoOfficeTest() throws Exception {
+    public void saveUserNoOfficeTest() {
         UserView user = new UserView();
         user.setFirstName("Владимир");
         user.setPosition("Селекционер");
         user.setOfficeId(10L);
-        Object errorResponse = restTemplate.postForObject(
-                "http://localhost:" + port + "/user/save",
-                user,
-                Object.class);
-        HashMap errors = (HashMap) errorResponse;
-        assertThat(errors.get("error"), is("Нет офиса с id: 10"));
+        Object error = restTemplate.postForObject(url + "save", user, Object.class);
+        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        Assert.assertNotNull(errorResponse);
+        assertThat(errorResponse.getError(), is("Нет офиса с id: 10"));
     }
 
     /**
      * Тест метода UserController#saveUser с пустыми параметрами
-     * @throws Exception
      */
     @Test
-    public void saveUserEmptyFieldsTest() throws Exception {
+    public void saveUserEmptyFieldsTest() {
         UserView user = new UserView();
         user.setFirstName("Владимир");
         user.setPosition("Селекционер");
-
-        Object errorResponse = restTemplate.postForObject(
-                "http://localhost:" + port + "/user/save",
-                user,
-                Object.class);
-        HashMap errors = (HashMap) errorResponse;
-        assertThat(errors.get("error"), is("Поле officeId не может быть пустым"));
+        Object error = restTemplate.postForObject(url + "save", user, Object.class);
+        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        Assert.assertNotNull(errorResponse);
+        assertThat(errorResponse.getError(), is("Поле officeId не может быть пустым"));
     }
 
     /**
      * Тест метода UserController#updateUser
      */
     @Test
-    public void updateUserPositiveTest(){
+    @DirtiesContext(methodMode = AFTER_METHOD)
+    public void updateUserPositiveTest() {
+        UserView userForSave = new UserView();
+        userForSave.setFirstName("Владимир");
+        userForSave.setSecondName("Ерофеев");
+        userForSave.setMiddleName("Александрович");
+        userForSave.setPosition("Селекционер");
+        userForSave.setPhone("551-551");
+        userForSave.setDocCode("21");
+        userForSave.setDocName("Паспорт");
+        userForSave.setDocNumber("1234 123459");
+        userForSave.setDocDate(new Date(2010 - 02 - 20));
+        userForSave.setCitizenshipCode("643");
+        userForSave.setIdentified(true);
+        userForSave.setOfficeId(1L);
+        restTemplate.postForObject(url + "save", userForSave, Wrapper.class);
+
         UserView user = new UserView();
-        user.setId(8L);
+        user.setId(9L);
         user.setFirstName("Илья");
         user.setSecondName("Кузнецов");
         user.setMiddleName("Кузьмич");
@@ -105,120 +127,118 @@ public class UserControllerTest {
         user.setDocCode("21");
         user.setDocName("Паспорт");
         user.setDocNumber("1222 123459");
-        user.setDocDate(new Date(2010-02-10));
+        user.setDocDate(new Date(2010 - 02 - 10));
         user.setCitizenshipCode("643");
         user.setIdentified(true);
         user.setOfficeId(2L);
+        Wrapper wrapper = restTemplate.postForObject(url + "update", user, Wrapper.class);
 
-
-        Wrapper wrapper = restTemplate.postForObject(
-                "http://localhost:" + port + "/user/update",
-                user,
-                Wrapper.class);
-        HashMap view = (HashMap) wrapper.getData();
-        assertThat(view.get("result"), is("success"));
+        SuccessResponse successResponse = new ObjectMapper().convertValue(wrapper.getData(), SuccessResponse.class);
+        Assert.assertNotNull(successResponse);
+        assertThat(successResponse.getResult(), is("success"));
     }
 
     /**
      * Тест метода UserController#updateUser с некорректными параметрами
-     * @throws Exception
      */
     @Test
-    public void updateUserInternalServerErrorTest() throws Exception {
-        Object errorResponse = restTemplate.postForObject(
-                "http://localhost:" + port + "/user/update",
-                "user",
-                Object.class);
-        HashMap errors = (HashMap) errorResponse;
-        assertThat(errors.get("error"), is("Ошибка на сервере"));
+    public void updateUserInternalServerErrorTest() {
+        Object error = restTemplate.postForObject(url + "update", "user", Object.class);
+        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        Assert.assertNotNull(errorResponse);
+        assertThat(errorResponse.getError(), is("Ошибка на сервере"));
     }
 
     /**
      * Тест метода UserController#updateUser с пустыми параметрами
-     * @throws Exception
      */
     @Test
-    public void updateUserEmptyFieldsTest() throws Exception {
+    public void updateUserEmptyFieldsTest() {
         UserView user = new UserView();
         user.setId(7L);
         user.setFirstName("Владимир");
-
-        Object errorResponse = restTemplate.postForObject(
-                "http://localhost:" + port + "/user/update",
-                user,
-                Object.class);
-        HashMap errors = (HashMap) errorResponse;
-        assertThat(errors.get("error"), is("Поле position не может быть пустым;"));
+        Object error = restTemplate.postForObject(url + "update", user, Object.class);
+        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        Assert.assertNotNull(errorResponse);
+        assertThat(errorResponse.getError(), is("Поле position не может быть пустым;"));
     }
 
     /**
      * Тест метода UserController#getListUsers
-     * @throws Exception
      */
     @Test
-    public void getListUsersPositiveTest() throws Exception {
+    @DirtiesContext(methodMode = AFTER_METHOD)
+    public void getListUsersPositiveTest() {
+        UserView userForSave = new UserView();
+        userForSave.setFirstName("Владимир");
+        userForSave.setSecondName("Ерофеев");
+        userForSave.setMiddleName("Александрович");
+        userForSave.setPosition("Селекционер");
+        userForSave.setPhone("551-551");
+        userForSave.setDocCode("07");
+        userForSave.setDocName("Военный билет");
+        userForSave.setDocNumber("1234 123459");
+        userForSave.setDocDate(new Date(2010 - 02 - 20));
+        userForSave.setCitizenshipCode("104");
+        userForSave.setIdentified(true);
+        userForSave.setOfficeId(2L);
+        restTemplate.postForObject(url + "save", userForSave, Wrapper.class);
+
         UserView user = new UserView();
         user.setOfficeId(2L);
-        user.setFirstName("Петр");
-        user.setSecondName("Романов");
-        user.setMiddleName("Иванович");
-        user.setPosition("Механик");
+        user.setFirstName("Владимир");
+        user.setSecondName("Ерофеев");
+        user.setMiddleName("Александрович");
+        user.setPosition("Селекционер");
         user.setDocCode("07");
         user.setCitizenshipCode("104");
 
-        Wrapper wrapper = restTemplate.postForObject(
-                "http://localhost:" + port + "/user/list", user, Wrapper.class);
-        List<HashMap> view = (List) wrapper.getData();
-        assertThat(view.get(0).get("id"), is(3));
-        assertThat(view.get(0).get("firstName"), is("Петр"));
-        assertThat(view.get(0).get("secondName"), is("Романов"));
-        assertThat(view.get(0).get("middleName"), is("Иванович"));
-        assertThat(view.get(0).get("position"), is("Механик"));
+        Wrapper wrapper = restTemplate.postForObject(url + "list", user, Wrapper.class);
+        List viewList = (List) wrapper.getData();
+        Assert.assertNotNull(viewList);
+        UserView view = new ObjectMapper().convertValue(viewList.get(0), UserView.class);
+        assertThat(viewList.size(), is(1));
+        assertThat(view.getId(), is(9L));
+        assertThat(view.getFirstName(), is("Владимир"));
+        assertThat(view.getSecondName(), is("Ерофеев"));
+        assertThat(view.getMiddleName(), is("Александрович"));
+        assertThat(view.getPosition(), is("Селекционер"));
     }
 
     /**
      * Тест метода UserController#getListUsers с неверными параметрами
-     * @throws Exception
      */
     @Test
-    public void getListUsersNoObjectTest() throws Exception {
+    public void getListUsersNoObjectTest() {
         UserView user = new UserView();
         user.setOfficeId(1L);
         user.setFirstName("Не Роман");
-        Object errorResponse = restTemplate.postForObject(
-                "http://localhost:" + port + "/user/list",
-                user,
-                Object.class);
-        HashMap errors = (HashMap) errorResponse;
-        assertThat(errors.get("error"), is("Работники, удовлетворяющие параметрам, отсутствуют"));
+        Object error = restTemplate.postForObject(url + "list", user, Object.class);
+        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        Assert.assertNotNull(errorResponse);
+        assertThat(errorResponse.getError(), is("Работники, удовлетворяющие параметрам, отсутствуют"));
     }
 
     /**
      * Тест метода UserController#getListUsers с некорректными параметрами
-     * @throws Exception
      */
     @Test
-    public void getListUsersIncorrectOfficeIdTest2() throws Exception {
+    public void getListUsersIncorrectOfficeIdTest2() {
         UserView user = new UserView();
         user.setOfficeId(-1L);
-        Object errorResponse = restTemplate.postForObject(
-                "http://localhost:" + port + "/user/list",
-                user,
-                Object.class);
-        HashMap errors = (HashMap) errorResponse;
-        assertThat(errors.get("error"), is("Параметр officeId обязателен к заполнению и не может быть меньше единицы"));
+        Object error = restTemplate.postForObject(url + "list", user, Object.class);
+        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        Assert.assertNotNull(errorResponse);
+        assertThat(errorResponse.getError(), is("Параметр officeId обязателен к заполнению и не может быть меньше единицы"));
     }
 
     /**
      * Тест метода UserController#getUserById
-     * @throws Exception
      */
     @Test
-    public void getUserByIdPositiveTest() throws Exception {
-        Wrapper wrapper = restTemplate.getForObject(
-                "http://localhost:" + port + "/user/{id}",
-                Wrapper.class,
-                2L);
+    @DirtiesContext(methodMode = AFTER_METHOD)
+    public void getUserByIdPositiveTest() {
+        Wrapper wrapper = restTemplate.getForObject(url + "{id}", Wrapper.class, 2L);
         HashMap view = (HashMap) wrapper.getData();
         assertThat(view.get("id"), is(2));
         assertThat(view.get("firstName"), is("Иван"));
@@ -236,29 +256,23 @@ public class UserControllerTest {
 
     /**
      * Тест метода UserController#getUserById с неверными параметрами
-     * @throws Exception
      */
     @Test
-    public void getUserByIdNoUserTest() throws Exception {
-        Object errorResponse = restTemplate.getForObject(
-                "http://localhost:" + port + "/user/{id}",
-                Object.class,
-                11L);
-        HashMap errors = (HashMap) errorResponse;
-        assertThat(errors.get("error"), is("Нет работника с id: 11"));
+    public void getUserByIdNoUserTest() {
+        Object error = restTemplate.getForObject(url + "{id}", Object.class, 9L);
+        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        Assert.assertNotNull(errorResponse);
+        assertThat(errorResponse.getError(), is("Нет работника с id: 9"));
     }
 
     /**
      * Тест метода UserController#getUserById с некорректными параметрами
-     * @throws Exception
      */
     @Test
-    public void getUserByIdInternalServerErrorTest() throws Exception {
-        Object errorResponse = restTemplate.getForObject(
-                "http://localhost:" + port + "/user/{id}",
-                Object.class,
-                "11L");
-        HashMap errors = (HashMap) errorResponse;
-        assertThat(errors.get("error"), is("Ошибка на сервере"));
+    public void getUserByIdInternalServerErrorTest() {
+        Object error = restTemplate.getForObject(url + "{id}", Object.class, "9L");
+        ErrorResponse errorResponse = new ObjectMapper().convertValue(error, ErrorResponse.class);
+        Assert.assertNotNull(errorResponse);
+        assertThat(errorResponse.getError(), is("Ошибка на сервере"));
     }
 }

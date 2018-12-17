@@ -51,7 +51,7 @@ public class UserDaoImpl implements UserDao {
      * {@inheritDoc}
      */
     @Override
-    public void updateUser(User user, Long id) {
+    public int updateUser(User user, Long id) {
         if (em.find(User.class, id) != null) {
             Document oldDocument = em.find(User.class, id).getDocument();
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -82,7 +82,7 @@ public class UserDaoImpl implements UserDao {
             if (user.getDocument() != null && oldDocument != null) {
                 em.remove(oldDocument);
             }
-            query.executeUpdate();
+            return (query.executeUpdate());
         } else {
             throw new NoObjectException("Нет работника с id: " + id);
         }

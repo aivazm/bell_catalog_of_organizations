@@ -1,5 +1,6 @@
 package com.am.catalog.service;
 
+import com.am.catalog.view.SuccessResponse;
 import com.am.catalog.view.UserView;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface UserService {
      * @param userView UserView-объект с обязательными параметрами firstName и position
      * @return Объект UserView (result: "success");
      */
-    UserView saveUser(UserView userView);
+    SuccessResponse saveUser(UserView userView);
 
     /**
      * Обновить поля существующего работника
@@ -23,7 +24,7 @@ public interface UserService {
      * @param userView UserView-объект с обязательными параметрами id, firstName и position
      * @return Объект UserView (result: "success");
      */
-    UserView updateUser(UserView userView);
+    SuccessResponse updateUser(UserView userView);
 
     /**
      * Получить работника по id

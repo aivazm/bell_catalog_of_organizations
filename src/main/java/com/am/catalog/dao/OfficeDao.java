@@ -18,11 +18,12 @@ public interface OfficeDao {
     void saveOffice(Office office);
 
     /**
-     * Обновить поля существующего офиса
      *
      * @param office Office-объект
+     * @param id id обновляемого офиса
+     * @return результат Query#executeUpdate()
      */
-    void updateOffice(Office office, Long id);
+    int updateOffice(Office office, Long id);
 
     /**
      * Получить офис по id

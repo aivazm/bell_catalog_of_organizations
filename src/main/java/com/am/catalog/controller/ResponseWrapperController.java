@@ -1,6 +1,7 @@
 package com.am.catalog.controller;
 
 import com.am.catalog.view.ErrorResponse;
+import com.am.catalog.view.OrganizationView;
 import com.am.catalog.view.Wrapper;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -9,6 +10,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+
 
 /**
  * Контроллер для оборачивания body ответа в тег data{}

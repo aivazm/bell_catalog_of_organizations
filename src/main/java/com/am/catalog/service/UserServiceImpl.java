@@ -3,11 +3,13 @@ package com.am.catalog.service;
 import com.am.catalog.dao.OfficeDao;
 import com.am.catalog.dao.UserDao;
 import com.am.catalog.exception.EmptyFieldException;
+import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.model.Country;
 import com.am.catalog.model.DocType;
 import com.am.catalog.model.Document;
 import com.am.catalog.model.Office;
 import com.am.catalog.model.User;
+import com.am.catalog.view.SuccessResponse;
 import com.am.catalog.view.UserView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional
-    public UserView saveUser(UserView userView) {
+    public SuccessResponse saveUser(UserView userView) {
         message = new StringBuilder();
         User user = getCrudeUser(userView);
         if (userView.getOfficeId() != null) {
@@ -78,7 +80,7 @@ public class UserServiceImpl implements UserService {
         }
         if (message.length() == 0) {
             userDao.saveUser(user);
-            return new UserView("success");
+            return new SuccessResponse("success");
         } else {
             throw new EmptyFieldException(message.toString().trim());
         }
@@ -89,7 +91,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional
-    public UserView updateUser(UserView userView) {
+    public SuccessResponse updateUser(UserView userView) {
         message = new StringBuilder();
         User user = getCrudeUser(userView);
         if (userView.getId() == null) {
@@ -124,8 +126,11 @@ public class UserServiceImpl implements UserService {
         }
         if (message.length() == 0) {
             Long id = userView.getId();
-            userDao.updateUser(user, id);
-            return new UserView("success");
+            if (userDao.updateUser(user, id) > 0) {
+                return new SuccessResponse("success");
+            } else {
+                throw new NoObjectException("Обновление не удалось");
+            }
         } else {
             throw new EmptyFieldException(message.toString().trim());
         }

@@ -2,6 +2,7 @@ package com.am.catalog.controller;
 
 import com.am.catalog.service.OfficeService;
 import com.am.catalog.view.OfficeView;
+import com.am.catalog.view.SuccessResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +37,7 @@ public class OfficeController {
      * @see OfficeService#saveOffice(OfficeView)
      */
     @PostMapping("/save")
-    public OfficeView saveOffice(@RequestBody OfficeView officeView) {
+    public SuccessResponse saveOffice(@RequestBody OfficeView officeView) {
         return officeService.saveOffice(officeView);
     }
 
@@ -48,7 +49,7 @@ public class OfficeController {
      * @see OfficeService#updateOffice(OfficeView)
      */
     @PostMapping("/update")
-    public OfficeView updateOffice(@RequestBody OfficeView officeView) {
+    public SuccessResponse updateOffice(@RequestBody OfficeView officeView) {
         return officeService.updateOffice(officeView);
     }
 

@@ -7,10 +7,12 @@ import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.model.Office;
 import com.am.catalog.model.Organization;
 import com.am.catalog.view.OfficeView;
+import com.am.catalog.view.SuccessResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.Servlet;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ public class OfficeServiceImpl implements OfficeService {
      */
     @Override
     @Transactional
-    public OfficeView saveOffice(OfficeView officeView) {
+    public SuccessResponse saveOffice(OfficeView officeView) {
         StringBuilder message = new StringBuilder();
         if (officeView.getOrgId() == null) {
             message.append("OrgId cannot be empty; ");
@@ -72,7 +74,7 @@ public class OfficeServiceImpl implements OfficeService {
             office.setActive(false);
         }
         officeDao.saveOffice(office);
-        return new OfficeView("success");
+        return new SuccessResponse("success");
     }
 
     /**
@@ -80,7 +82,7 @@ public class OfficeServiceImpl implements OfficeService {
      */
     @Override
     @Transactional
-    public OfficeView updateOffice(OfficeView officeView) {
+    public SuccessResponse updateOffice(OfficeView officeView) {
         StringBuilder message = new StringBuilder();
         if (officeView.getId() == null) {
             message.append("id cannot be empty; ");
@@ -112,8 +114,11 @@ public class OfficeServiceImpl implements OfficeService {
         if (officeView.isActive() != null) {
             office.setActive(officeView.isActive());
         }
-        officeDao.updateOffice(office, officeView.getId());
-        return new OfficeView("success");
+        if (officeDao.updateOffice(office, officeView.getId()) > 0) {
+            return new SuccessResponse("success");
+        } else {
+            throw new NoObjectException("Обновление офиса не удалось");
+        }
     }
 
     /**

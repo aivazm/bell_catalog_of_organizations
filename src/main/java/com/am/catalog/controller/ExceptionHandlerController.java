@@ -25,7 +25,7 @@ public class ExceptionHandlerController {
      */
     @ExceptionHandler(EmptyFieldException.class)
     public ErrorResponse emptyFieldException(EmptyFieldException ex) {
-        log.log(Level.SEVERE, "EmptyFieldException: ", ex);
+        log.log(Level.SEVERE, ex.getClass().getSimpleName() + ": " + ex.getMessage(), ex);
         return new ErrorResponse(ex.getMessage());
     }
 
@@ -37,7 +37,7 @@ public class ExceptionHandlerController {
      */
     @ExceptionHandler(NotUniqueException.class)
     public ErrorResponse notUniqueException(NotUniqueException ex) {
-        log.log(Level.SEVERE, "NotUniqueException: ", ex);
+        log.log(Level.SEVERE, ex.getClass().getSimpleName() + ": " + ex.getMessage(), ex);
         return new ErrorResponse(ex.getMessage());
     }
 
@@ -49,7 +49,7 @@ public class ExceptionHandlerController {
      */
     @ExceptionHandler(NoObjectException.class)
     public ErrorResponse noObjectException(NoObjectException ex) {
-        log.log(Level.SEVERE, "NoObjectException: ", ex);
+        log.log(Level.SEVERE, ex.getClass().getSimpleName() + ": " + ex.getMessage(), ex);
         return new ErrorResponse(ex.getMessage());
     }
 
@@ -61,7 +61,7 @@ public class ExceptionHandlerController {
      */
     @ExceptionHandler(value = Exception.class)
     public ErrorResponse anyException(Exception ex) {
-        log.log(Level.SEVERE, "Exception: ", ex);
+        log.log(Level.SEVERE, ex.getClass().getSimpleName() + ": " + ex.getMessage(), ex);
         return new ErrorResponse("Ошибка на сервере");
     }
 }

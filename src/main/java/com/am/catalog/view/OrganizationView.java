@@ -62,11 +62,6 @@ public class OrganizationView {
      */
     private Boolean isActive;
 
-    /**
-     * Поле для вывода сообщения об успешном выполнении запросов /organization/save и /organization/update
-     */
-    private String result;
-
     public OrganizationView() {
     }
 
@@ -109,14 +104,6 @@ public class OrganizationView {
         this.address = address;
         this.phone = phone;
         this.isActive = isActive;
-    }
-
-    /**
-     * Конструктор для вывода сообщения об успешном выполнении запросов /organization/save и /organization/update
-     * @param result
-     */
-    public OrganizationView(String result) {
-        this.result = result;
     }
 
     public Long getId() {
@@ -183,11 +170,4 @@ public class OrganizationView {
         isActive = active;
     }
 
-    public String getResult() {
-        return result;
-    }
-
-    public void setResult(String result) {
-        this.result = result;
-    }
 }
