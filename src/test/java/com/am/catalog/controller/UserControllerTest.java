@@ -4,7 +4,6 @@ import com.am.catalog.view.ErrorResponse;
 import com.am.catalog.view.SuccessResponse;
 import com.am.catalog.view.UserView;
 import com.am.catalog.view.Wrapper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +20,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -407,6 +405,8 @@ public class UserControllerTest {
 
     /**
      * Тест метода UserController#getUserById с некорректными параметрами
+     * Метод ожидает параметр типа Long.
+     * В тесте направляется параметр типа String
      */
     @Test
     public void getUserByIdInternalServerErrorTest() {

@@ -105,6 +105,8 @@ public class OrganizationControllerITest {
 
     /**
      * Тест метода OrganizationController#getOrganizationById с некорректными параметрами
+     * Метод ожидает параметр типа Long.
+     * В тесте направляется параметр типа String
      */
     @Test
     public void getOrganizationByIdInternalServerErrorTest() {

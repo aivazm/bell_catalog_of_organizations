@@ -345,6 +345,8 @@ public class OfficeControllerTest {
 
     /**
      * Тест метода OfficeController#getOfficeById с некорректными параметрами
+     * Метод ожидает параметр типа Long.
+     * В тесте направляется параметр типа String
      */
     @Test
     public void getOfficeByIdInternalServerErrorTest() {
