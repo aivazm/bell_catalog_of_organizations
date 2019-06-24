@@ -1,6 +1,10 @@
 package com.am.catalog.view;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -10,6 +14,10 @@ import javax.validation.constraints.Size;
  * View-класс Office
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class OfficeView {
     /**
      * Идентификатор
@@ -45,84 +53,4 @@ public class OfficeView {
      * Id организации офиса
      */
     private Long orgId;
-
-    public OfficeView() {
-    }
-
-    /**
-     * Конструктор для вывода данных после успешного выполнения запроса /office/{id}
-     * @param id
-     * @param name
-     * @param address
-     * @param phone
-     * @param isActive
-     */
-    public OfficeView(Long id, String name, String address, String phone, Boolean isActive) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-        this.phone = phone;
-        this.isActive = isActive;
-    }
-
-    /**
-     * Конструктор для вывода данных после успешного выполнения запроса /office/list/{orgId}
-     * @param id
-     * @param name
-     * @param isActive
-     */
-    public OfficeView(Long id, String name, Boolean isActive) {
-        this.id = id;
-        this.name = name;
-        this.isActive = isActive;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public Boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
-    }
-
-    public Long getOrgId() {
-        return orgId;
-    }
-
-    public void setOrgId(Long orgId) {
-        this.orgId = orgId;
-    }
-
 }

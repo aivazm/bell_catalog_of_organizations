@@ -74,8 +74,8 @@ public class UserDaoImpl implements UserDao {
             if (user.getCountry() != null) {
                 update.set(root.get("country"), getExistingCountry(user.getCountry()));
             }
-            if (user.isIdentified() != null) {
-                update.set(root.get("isIdentified"), user.isIdentified());
+            if (user.getIsIdentified() != null) {
+                update.set(root.get("isIdentified"), user.getIsIdentified());
             }
             update.where(root.get("id").in(id));
             Query query = em.createQuery(update);

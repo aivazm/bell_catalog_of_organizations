@@ -56,7 +56,7 @@ public class OrganizationControllerITest {
         organization.setKpp("012345678");
         organization.setAddress("Адрес");
         organization.setPhone("123456789");
-        organization.setActive(true);
+        organization.setIsActive(true);
         restTemplate.postForLocation(url + "save", organization);
 
         ParameterizedTypeReference<Wrapper<OrganizationView>> parameterizedTypeReference =
@@ -81,7 +81,7 @@ public class OrganizationControllerITest {
         assertThat(view.getKpp(), is("012345678"));
         assertThat(view.getAddress(), is("Адрес"));
         assertThat(view.getPhone(), is("123456789"));
-        assertThat(view.isActive(), is(true));
+        assertThat(view.getIsActive(), is(true));
     }
 
     /**
@@ -215,7 +215,7 @@ public class OrganizationControllerITest {
         organizationForSave.setKpp("012345678");
         organizationForSave.setAddress("Адрес");
         organizationForSave.setPhone("123456789");
-        organizationForSave.setActive(true);
+        organizationForSave.setIsActive(true);
         restTemplate.postForLocation(url + "save", organizationForSave);
 
         OrganizationView organizationForUpdate = new OrganizationView();
@@ -256,7 +256,7 @@ public class OrganizationControllerITest {
         organizationForSave.setKpp("012345678");
         organizationForSave.setAddress("Адрес");
         organizationForSave.setPhone("123456789");
-        organizationForSave.setActive(true);
+        organizationForSave.setIsActive(true);
         restTemplate.postForLocation(url + "save", organizationForSave);
 
         OrganizationView organizationForUpdate = new OrganizationView();

@@ -58,7 +58,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
             if (org.getPhone() != null) {
                 update.set(root.get("phone"), org.getPhone());
             }
-            update.set(root.get("isActive"), org.isActive());
+            update.set(root.get("isActive"), org.getIsActive());
             update.where(root.get("id").in(id));
             Query query = em.createQuery(update);
             return (query.executeUpdate());

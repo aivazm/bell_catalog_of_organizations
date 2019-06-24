@@ -1,5 +1,10 @@
 package com.am.catalog.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,6 +16,10 @@ import java.io.Serializable;
  * Организация
  */
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class Organization implements Serializable {
     /**
      * Идентификатор
@@ -60,71 +69,71 @@ public class Organization implements Serializable {
     @Column(name = "is_active")
     private Boolean isActive;
 
-    public Organization() {
-    }
+//    public Organization() {
+//    }
 
-    public Organization(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getInn() {
-        return inn;
-    }
-
-    public void setInn(String inn) {
-        this.inn = inn;
-    }
-
-    public String getKpp() {
-        return kpp;
-    }
-
-    public void setKpp(String kpp) {
-        this.kpp = kpp;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public Boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
+//    public Organization(Long id) {
+//        this.id = id;
+//    }
+//
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    public String getName() {
+//        return name;
+//    }
+//
+//    public void setName(String name) {
+//        this.name = name;
+//    }
+//
+//    public String getFullName() {
+//        return fullName;
+//    }
+//
+//    public void setFullName(String fullName) {
+//        this.fullName = fullName;
+//    }
+//
+//    public String getInn() {
+//        return inn;
+//    }
+//
+//    public void setInn(String inn) {
+//        this.inn = inn;
+//    }
+//
+//    public String getKpp() {
+//        return kpp;
+//    }
+//
+//    public void setKpp(String kpp) {
+//        this.kpp = kpp;
+//    }
+//
+//    public String getAddress() {
+//        return address;
+//    }
+//
+//    public void setAddress(String address) {
+//        this.address = address;
+//    }
+//
+//    public String getPhone() {
+//        return phone;
+//    }
+//
+//    public void setPhone(String phone) {
+//        this.phone = phone;
+//    }
+//
+//    public Boolean isActive() {
+//        return isActive;
+//    }
+//
+//    public void setActive(Boolean isActive) {
+//        this.isActive = isActive;
+//    }
 
 }

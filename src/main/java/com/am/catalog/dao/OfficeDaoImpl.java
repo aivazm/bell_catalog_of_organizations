@@ -26,7 +26,6 @@ public class OfficeDaoImpl implements OfficeDao {
 
     private final EntityManager em;
 
-//    @Autowired
     public OfficeDaoImpl(EntityManager em) {
         this.em = em;
     }
@@ -52,8 +51,8 @@ public class OfficeDaoImpl implements OfficeDao {
             if (office.getPhone() != null) {
                 update.set(root.get("phone"), office.getPhone());
             }
-            if (office.isActive() != null) {
-                update.set(root.get("isActive"), office.isActive());
+            if (office.getIsActive() != null) {
+                update.set(root.get("isActive"), office.getIsActive());
             }
             if (office.getOrganization() != null) {
                 getUniqueOffice(office.getName(), office.getOrganization());
