@@ -15,6 +15,7 @@ import javax.validation.Validator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * {@inheritDoc}
@@ -92,16 +93,14 @@ public class OrganizationServiceImpl implements OrganizationService {
                 organizationView.getInn(),
                 organizationView.getIsActive()
         );
-        List<OrganizationView> viewList = new ArrayList<>();
-        for (Organization o : organizations) {
-            OrganizationView view = OrganizationView.builder()
-                    .id(o.getId())
-                    .name(o.getName())
-                    .isActive(o.getIsActive())
-                    .build();
-            viewList.add(view);
-        }
-        return viewList;
+
+        return (organizations.stream().map(o->OrganizationView.builder()
+                                            .id(o.getId())
+                                            .name(o.getName())
+                                            .isActive(o.getIsActive())
+                                            .build())
+                                      .collect(Collectors.toList()));
+
 
     }
 

@@ -12,12 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.Servlet;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * {@inheritDoc}
@@ -154,15 +153,13 @@ public class OfficeServiceImpl implements OfficeService {
                     officeView.getPhone(),
                     officeView.getIsActive()
             );
-            List<OfficeView> viewList = new ArrayList<>();
-            for (Office o : offices) {
-                viewList.add(OfficeView.builder()
-                            .id(o.getId())
-                            .name(o.getName())
-                            .isActive(o.getIsActive())
-                            .build());
-            }
-            return viewList;
+
+            return (offices.stream().map(o -> OfficeView.builder()
+                    .id(o.getId())
+                    .name(o.getName())
+                    .isActive(o.getIsActive())
+                    .build()).collect(Collectors.toList()));
+
         } else {
             throw new NoObjectException("Нет организации с id: " + officeView.getOrgId());
         }

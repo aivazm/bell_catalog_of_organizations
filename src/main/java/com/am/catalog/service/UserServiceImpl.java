@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * {@inheritDoc}
@@ -191,17 +192,15 @@ public class UserServiceImpl implements UserService {
                 userView.getDocCode(),
                 userView.getCitizenshipCode()
         );
-        List<UserView> userViewList = new ArrayList<>();
-        for (User user : userList) {
-            userViewList.add(UserView.builder()
-                    .id(user.getId())
-                    .firstName(user.getFirstName())
-                    .secondName(user.getSecondName())
-                    .middleName(user.getMiddleName())
-                    .position(user.getPosition())
-                    .build());
-        }
-        return userViewList;
+
+        return (userList.stream().map(user -> UserView.builder()
+                                        .id(user.getId())
+                                        .firstName(user.getFirstName())
+                                        .secondName(user.getSecondName())
+                                        .middleName(user.getMiddleName())
+                                        .position(user.getPosition())
+                                        .build())
+                                 .collect(Collectors.toList()));
     }
 
 
