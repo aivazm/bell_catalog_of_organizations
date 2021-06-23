@@ -60,7 +60,7 @@ public class UserControllerTest {
         user.setDocNumber("1234 123459");
         user.setDocDate(new Date(2010 - 02 - 20));
         user.setCitizenshipCode("643");
-        user.setIdentified(true);
+        user.setIsIdentified(true);
         user.setOfficeId(1L);
 
         ParameterizedTypeReference<Wrapper<SuccessResponse>> parameterizedTypeReference =
@@ -147,7 +147,7 @@ public class UserControllerTest {
         userForSave.setDocNumber("1234 123459");
         userForSave.setDocDate(new Date(2010 - 02 - 20));
         userForSave.setCitizenshipCode("643");
-        userForSave.setIdentified(true);
+        userForSave.setIsIdentified(true);
         userForSave.setOfficeId(1L);
         restTemplate.postForObject(url + "save", userForSave, Wrapper.class);
 
@@ -163,7 +163,7 @@ public class UserControllerTest {
         user.setDocNumber("1222 123459");
         user.setDocDate(new Date(2010 - 02 - 10));
         user.setCitizenshipCode("643");
-        user.setIdentified(true);
+        user.setIsIdentified(true);
         user.setOfficeId(2L);
         ParameterizedTypeReference<Wrapper<SuccessResponse>> parameterizedTypeReference =
                 new ParameterizedTypeReference<Wrapper<SuccessResponse>>() {
@@ -251,7 +251,7 @@ public class UserControllerTest {
         userForSave.setDocNumber("1234 123459");
         userForSave.setDocDate(new Date(2010 - 02 - 20));
         userForSave.setCitizenshipCode("104");
-        userForSave.setIdentified(true);
+        userForSave.setIsIdentified(true);
         userForSave.setOfficeId(2L);
         restTemplate.postForObject(url + "save", userForSave, Wrapper.class);
 
@@ -352,7 +352,7 @@ public class UserControllerTest {
         userForSave.setDocNumber("1234 123459");
         userForSave.setDocDate(new Date());
         userForSave.setCitizenshipCode("643");
-        userForSave.setIdentified(true);
+        userForSave.setIsIdentified(true);
         userForSave.setOfficeId(2L);
         restTemplate.postForObject(url + "save", userForSave, Wrapper.class);
 
@@ -379,7 +379,7 @@ public class UserControllerTest {
         assertThat(view.getDocNumber(), is("1234 123459"));
         assertThat(view.getCitizenshipName(), is("Российская Федерация"));
         assertThat(view.getCitizenshipCode(), is("643"));
-        assertThat(view.isIdentified(), is(true));
+        assertThat(view.getIsIdentified(), is(true));
     }
 
     /**

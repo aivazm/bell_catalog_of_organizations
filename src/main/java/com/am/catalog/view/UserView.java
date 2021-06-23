@@ -1,6 +1,10 @@
 package com.am.catalog.view;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -13,6 +17,10 @@ import java.util.Date;
  * View-класс User
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class UserView {
     /**
      * Идентификатор
@@ -92,186 +100,5 @@ public class UserView {
      */
     private Boolean isIdentified;
 
-//    @Positive(message = "Office Id должен быть больше нуля")
-//    @NotNull(message = "Поле Office Id не может быть пустым")
     private Long officeId;
-
-    public UserView() {
-    }
-
-    /**
-     * Конструктор для вывода данных после успешного выполнения запроса /user/list
-     * @param id
-     * @param firstName
-     * @param secondName
-     * @param middleName
-     * @param position
-     */
-    public UserView(Long id,
-                    String firstName,
-                    String secondName,
-                    String middleName,
-                    String position
-    ) {
-        this.id = id;
-        this.firstName = firstName;
-        this.secondName = secondName;
-        this.middleName = middleName;
-        this.position = position;
-    }
-
-    /**
-     * Конструктор для вывода данных после успешного выполнения запроса /user/{id}
-     * @param id
-     * @param firstName
-     * @param secondName
-     * @param middleName
-     * @param position
-     * @param phone
-     * @param docName
-     * @param docNumber
-     * @param docDate
-     * @param citizenshipName
-     * @param citizenshipCode
-     * @param isIdentified
-     */
-    public UserView(Long id,
-                    String firstName,
-                    String secondName,
-                    String middleName,
-                    String position,
-                    String phone,
-                    String docName,
-                    String docNumber,
-                    Date docDate,
-                    String citizenshipName,
-                    String citizenshipCode,
-                    Boolean isIdentified
-    ) {
-        this.id = id;
-        this.firstName = firstName;
-        this.secondName = secondName;
-        this.middleName = middleName;
-        this.position = position;
-        this.phone = phone;
-        this.docName = docName;
-        this.docNumber = docNumber;
-        this.docDate = docDate;
-        this.citizenshipName = citizenshipName;
-        this.citizenshipCode = citizenshipCode;
-        this.isIdentified = isIdentified;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getSecondName() {
-        return secondName;
-    }
-
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
-    }
-
-    public String getMiddleName() {
-        return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
-
-    public String getPosition() {
-        return position;
-    }
-
-    public void setPosition(String position) {
-        this.position = position;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getDocCode() {
-        return docCode;
-    }
-
-    public void setDocCode(String docCode) {
-        this.docCode = docCode;
-    }
-
-    public String getDocName() {
-        return docName;
-    }
-
-    public void setDocName(String docName) {
-        this.docName = docName;
-    }
-
-    public String getDocNumber() {
-        return docNumber;
-    }
-
-    public void setDocNumber(String docNumber) {
-        this.docNumber = docNumber;
-    }
-
-    public Date getDocDate() {
-        return docDate;
-    }
-
-    public void setDocDate(Date docDate) {
-        this.docDate = docDate;
-    }
-
-    public String getCitizenshipName() {
-        return citizenshipName;
-    }
-
-    public void setCitizenshipName(String citizenshipName) {
-        this.citizenshipName = citizenshipName;
-    }
-
-    public String getCitizenshipCode() {
-        return citizenshipCode;
-    }
-
-    public void setCitizenshipCode(String citizenshipCode) {
-        this.citizenshipCode = citizenshipCode;
-    }
-
-    public Boolean isIdentified() {
-        return isIdentified;
-    }
-
-    public void setIdentified(Boolean identified) {
-        isIdentified = identified;
-    }
-
-    public Long getOfficeId() {
-        return officeId;
-    }
-
-    public void setOfficeId(Long officeId) {
-        this.officeId = officeId;
-    }
-
 }

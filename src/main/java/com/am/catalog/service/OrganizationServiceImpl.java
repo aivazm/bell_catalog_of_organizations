@@ -15,6 +15,7 @@ import javax.validation.Validator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * {@inheritDoc}
@@ -68,17 +69,16 @@ public class OrganizationServiceImpl implements OrganizationService {
             throw new EmptyFieldException("Id cannot be empty or less than one");
         }
         Organization org = dao.getOrganizationById(id);
-        OrganizationView view = new OrganizationView(
-                org.getId(),
-                org.getName(),
-                org.getFullName(),
-                org.getInn(),
-                org.getKpp(),
-                org.getAddress(),
-                org.getPhone(),
-                org.isActive()
-        );
-        return view;
+        return OrganizationView.builder()
+                .id(org.getId())
+                .name(org.getName())
+                .fullName(org.getFullName())
+                .inn(org.getInn())
+                .kpp(org.getKpp())
+                .address(org.getAddress())
+                .phone(org.getPhone())
+                .isActive(org.getIsActive())
+                .build();
     }
 
     /**
@@ -91,14 +91,16 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
         List<Organization> organizations = dao.getOrganizationList(organizationView.getName(),
                 organizationView.getInn(),
-                organizationView.isActive()
+                organizationView.getIsActive()
         );
-        List<OrganizationView> viewList = new ArrayList<>();
-        for (Organization o : organizations) {
-            OrganizationView view = new OrganizationView(o.getId(), o.getName(), o.isActive());
-            viewList.add(view);
-        }
-        return viewList;
+
+        return (organizations.stream().map(o->OrganizationView.builder()
+                                            .id(o.getId())
+                                            .name(o.getName())
+                                            .isActive(o.getIsActive())
+                                            .build())
+                                      .collect(Collectors.toList()));
+
 
     }
 
@@ -112,21 +114,14 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
             throw new EmptyFieldException(message.toString().trim());
         }
-        Organization organization = new Organization();
-        organization.setName(organizationView.getName());
-        organization.setFullName(organizationView.getFullName());
-        organization.setInn(organizationView.getInn());
-        organization.setKpp(organizationView.getKpp());
-        organization.setAddress(organizationView.getAddress());
-        if (organizationView.getPhone() != null) {
-            organization.setPhone(organizationView.getPhone());
-        }
-        if (organizationView.isActive() != null) {
-            organization.setActive(organizationView.isActive());
-        } else {
-            organization.setActive(false);
-        }
-
-        return organization;
+        return Organization.builder()
+                .name(organizationView.getName())
+                .fullName(organizationView.getFullName())
+                .inn(organizationView.getInn())
+                .kpp(organizationView.getKpp())
+                .address(organizationView.getAddress())
+                .phone(organizationView.getPhone())
+                .isActive(organizationView.getIsActive())
+                .build();
     }
 }

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * {@inheritDoc}
@@ -73,10 +74,10 @@ public class UserServiceImpl implements UserService {
                 user.setDocument(document);
             }
         }
-        if (userView.isIdentified() != null) {
-            user.setIdentified(userView.isIdentified());
+        if (userView.getIsIdentified() != null) {
+            user.setIsIdentified(userView.getIsIdentified());
         } else {
-            user.setIdentified(false);
+            user.setIsIdentified(false);
         }
         if (message.length() == 0) {
             userDao.saveUser(user);
@@ -105,8 +106,8 @@ public class UserServiceImpl implements UserService {
                 message.append("Офис с указанным id отсутствует");
             }
         }
-        if (userView.isIdentified() != null) {
-            user.setIdentified(userView.isIdentified());
+        if (userView.getIsIdentified() != null) {
+            user.setIsIdentified(userView.getIsIdentified());
         }
         String name = userView.getDocName();
         String number = userView.getDocNumber();
@@ -121,8 +122,8 @@ public class UserServiceImpl implements UserService {
                 user.setDocument(document);
             }
         }
-        if (userView.isIdentified() != null) {
-            user.setIdentified(userView.isIdentified());
+        if (userView.getIsIdentified() != null) {
+            user.setIsIdentified(userView.getIsIdentified());
         }
         if (message.length() == 0) {
             Long id = userView.getId();
@@ -159,20 +160,20 @@ public class UserServiceImpl implements UserService {
             countryName = user.getCountry().getName();
             countryCode = user.getCountry().getCode();
         }
-        return new UserView(
-                user.getId(),
-                user.getFirstName(),
-                user.getSecondName(),
-                user.getMiddleName(),
-                user.getPosition(),
-                user.getPhone(),
-                docName,
-                docNumber,
-                docDate,
-                countryName,
-                countryCode,
-                user.isIdentified()
-        );
+        return UserView.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .secondName(user.getSecondName())
+                .middleName(user.getMiddleName())
+                .position(user.getPosition())
+                .phone(user.getPhone())
+                .docName(docName)
+                .docNumber(docNumber)
+                .docDate(docDate)
+                .citizenshipName(countryName)
+                .citizenshipCode(countryCode)
+                .isIdentified(user.getIsIdentified())
+                .build();
     }
 
     /**
@@ -191,13 +192,15 @@ public class UserServiceImpl implements UserService {
                 userView.getDocCode(),
                 userView.getCitizenshipCode()
         );
-        List<UserView> userViewList = new ArrayList<>();
-        for (User user : userList) {
-            UserView view = new UserView(user.getId(), user.getFirstName(), user.getSecondName(),
-                    user.getMiddleName(), user.getPosition());
-            userViewList.add(view);
-        }
-        return userViewList;
+
+        return (userList.stream().map(user -> UserView.builder()
+                                        .id(user.getId())
+                                        .firstName(user.getFirstName())
+                                        .secondName(user.getSecondName())
+                                        .middleName(user.getMiddleName())
+                                        .position(user.getPosition())
+                                        .build())
+                                 .collect(Collectors.toList()));
     }
 
 

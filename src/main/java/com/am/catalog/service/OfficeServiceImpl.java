@@ -12,12 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.Servlet;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * {@inheritDoc}
@@ -68,10 +67,10 @@ public class OfficeServiceImpl implements OfficeService {
         if (officeView.getPhone() != null) {
             office.setPhone(officeView.getPhone());
         }
-        if (officeView.isActive() != null) {
-            office.setActive(officeView.isActive());
+        if (officeView.getIsActive() != null) {
+            office.setIsActive(officeView.getIsActive());
         } else {
-            office.setActive(false);
+            office.setIsActive(false);
         }
         officeDao.saveOffice(office);
         return new SuccessResponse("success");
@@ -111,8 +110,8 @@ public class OfficeServiceImpl implements OfficeService {
         if (officeView.getPhone() != null) {
             office.setPhone(officeView.getPhone());
         }
-        if (officeView.isActive() != null) {
-            office.setActive(officeView.isActive());
+        if (officeView.getIsActive() != null) {
+            office.setIsActive(officeView.getIsActive());
         }
         if (officeDao.updateOffice(office, officeView.getId()) > 0) {
             return new SuccessResponse("success");
@@ -130,11 +129,13 @@ public class OfficeServiceImpl implements OfficeService {
             throw new EmptyFieldException("Id cannot be empty or less than one");
         }
         Office office = officeDao.getOfficeById(id);
-        return new OfficeView(office.getId(),
-                office.getName(),
-                office.getAddress(),
-                office.getPhone(),
-                office.isActive());
+        return OfficeView.builder()
+                .id(office.getId())
+                .name(office.getName())
+                .address(office.getAddress())
+                .phone(office.getPhone())
+                .isActive(office.getIsActive())
+                .build();
     }
 
     /**
@@ -150,14 +151,15 @@ public class OfficeServiceImpl implements OfficeService {
             List<Office> offices = officeDao.getOfficeList(org,
                     officeView.getName(),
                     officeView.getPhone(),
-                    officeView.isActive()
+                    officeView.getIsActive()
             );
-            List<OfficeView> viewList = new ArrayList<>();
-            for (Office o : offices) {
-                OfficeView view = new OfficeView(o.getId(), o.getName(), o.isActive());
-                viewList.add(view);
-            }
-            return viewList;
+
+            return (offices.stream().map(o -> OfficeView.builder()
+                    .id(o.getId())
+                    .name(o.getName())
+                    .isActive(o.getIsActive())
+                    .build()).collect(Collectors.toList()));
+
         } else {
             throw new NoObjectException("Нет организации с id: " + officeView.getOrgId());
         }

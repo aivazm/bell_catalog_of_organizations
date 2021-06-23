@@ -299,7 +299,7 @@ public class OfficeControllerTest {
         officeForSave.setName("Проверка");
         officeForSave.setAddress("Office address");
         officeForSave.setPhone("12345678");
-        officeForSave.setActive(true);
+        officeForSave.setIsActive(true);
         officeForSave.setOrgId(1L);
         restTemplate.postForObject(url + "save", officeForSave, Wrapper.class);
 
@@ -321,7 +321,7 @@ public class OfficeControllerTest {
         assertThat(view.getName(), is("Проверка"));
         assertThat(view.getAddress(), is("Office address"));
         assertThat(view.getPhone(), is("12345678"));
-        assertThat(view.isActive(), is(true));
+        assertThat(view.getIsActive(), is(true));
     }
 
     /**
