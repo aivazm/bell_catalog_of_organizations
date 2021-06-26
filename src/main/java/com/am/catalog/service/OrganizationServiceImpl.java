@@ -94,7 +94,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 organizationView.getIsActive()
         );
 
-        return (organizations.stream().map(o->OrganizationView.builder()
+        return (organizations.stream().map(o -> OrganizationView.builder()
                                             .id(o.getId())
                                             .name(o.getName())
                                             .isActive(o.getIsActive())
@@ -106,22 +106,23 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private Organization getValidOrganization(OrganizationView organizationView) {
         Set<ConstraintViolation<OrganizationView>> validate = validator.validate(organizationView);
-        if (!validate.isEmpty()) {
-            StringBuilder message = new StringBuilder();
-            for (ConstraintViolation<OrganizationView> violation : validate) {
-                message.append(violation.getMessage());
-                message.append("; ");
-            }
-            throw new EmptyFieldException(message.toString().trim());
+        if (validate.isEmpty()) {
+            return Organization.builder()
+                    .name(organizationView.getName())
+                    .fullName(organizationView.getFullName())
+                    .inn(organizationView.getInn())
+                    .kpp(organizationView.getKpp())
+                    .address(organizationView.getAddress())
+                    .phone(organizationView.getPhone())
+                    .isActive(organizationView.getIsActive())
+                    .build();
         }
-        return Organization.builder()
-                .name(organizationView.getName())
-                .fullName(organizationView.getFullName())
-                .inn(organizationView.getInn())
-                .kpp(organizationView.getKpp())
-                .address(organizationView.getAddress())
-                .phone(organizationView.getPhone())
-                .isActive(organizationView.getIsActive())
-                .build();
+        StringBuilder message = new StringBuilder();
+        for (ConstraintViolation<OrganizationView> violation : validate) {
+            message.append(violation.getMessage());
+            message.append("; ");
+        }
+        throw new EmptyFieldException(message.toString().trim());
+
     }
 }
