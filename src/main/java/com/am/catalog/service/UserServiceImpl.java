@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
         }
         if (message.length() == 0) {
             userDao.saveUser(user);
-            return new SuccessResponse("success");
+            return new SuccessResponse();
         } else {
             throw new EmptyFieldException(message.toString().trim());
         }
@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
         if (message.length() == 0) {
             Long id = userView.getId();
             if (userDao.updateUser(user, id) > 0) {
-                return new SuccessResponse("success");
+                return new SuccessResponse();
             } else {
                 throw new NoObjectException("Обновление не удалось");
             }

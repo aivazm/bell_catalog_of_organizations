@@ -40,7 +40,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     public SuccessResponse saveOrganization(OrganizationView organizationView) {
         Organization organization = getValidOrganization(organizationView);
         dao.saveOrganization(organization);
-        return new SuccessResponse("success");
+        return new SuccessResponse();
     }
 
     /**
@@ -54,7 +54,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
         Organization organization = getValidOrganization(organizationView);
         if (dao.updateOrganization(organization, organizationView.getId()) > 0) {
-            return new SuccessResponse("success");
+            return new SuccessResponse();
         } else {
             throw new NoObjectException("Обновление не удалось");
         }

@@ -73,7 +73,7 @@ public class OfficeServiceImpl implements OfficeService {
             office.setIsActive(false);
         }
         officeDao.saveOffice(office);
-        return new SuccessResponse("success");
+        return new SuccessResponse();
     }
 
     /**
@@ -114,7 +114,7 @@ public class OfficeServiceImpl implements OfficeService {
             office.setIsActive(officeView.getIsActive());
         }
         if (officeDao.updateOffice(office, officeView.getId()) > 0) {
-            return new SuccessResponse("success");
+            return new SuccessResponse();
         } else {
             throw new NoObjectException("Обновление офиса не удалось");
         }
