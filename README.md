@@ -339,8 +339,8 @@ method:POST
 ```
 
 ### Используемые технологии и сервисы
-Java
-Spring Boot
-Hibernate
-H2
-lombok
+* Java
+* Spring Boot
+* Hibernate
+* H2
+* lombok
