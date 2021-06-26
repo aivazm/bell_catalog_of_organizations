@@ -24,21 +24,46 @@ mvn spring-boot:run
 ```
 Либо кнопкой Run из среды разработки
 
-### URL's
+### Доступные URL's
 | № | Метод | URL | Описание |
 | --- | --- | --- | --- |
-| 1 | POST | http://localhost:8888/organization/list | Получить список организаций |
-| 2 | GET | http://localhost:8888/organization/{id} | Получить организацию по идентификатору |
+| 1 | GET | http://localhost:8888/organization/{id} | Получить организацию по идентификатору |
+| 2 | POST | http://localhost:8888/organization/list | Получить список организаций |
 | 3 | POST | http://localhost:8888/organization/update | Обновить атрибуты организации (name, fullName, inn, kpp, address, phone, isActive) |
 | 4 | POST | http://localhost:8888/organization/save | Добавить новую организацию |
 | 5 | GET | http://localhost:8888/office/{id} | Получить офис по идентификатору |
 | 6 | POST | http://localhost:8888/office/list | Получить список офисов по идентификатору организации (фильтр по id, name, isActive) |
 | 7 | POST | http://localhost:8888/office/update | Обновить атрибуты офиса (name, address, phone, isActive) |
 | 8 | POST | http://localhost:8888/office/save | Добавить новый офис |
+| 9 | GET | http://localhost:8888/user/{id} | Получить работника по идентификатору |
+| 10 | POST | http://localhost:8888/user/list | Получить список работников по идентификатору офиса (фильтр по officeId, firstName, secondName, middleName, position, docCode, citizenshipCode) |
+| 11 | POST | http://localhost:8888/user/update | Обновить атрибуты работника (firstName, secondName, middleName, position, phone, docName, docNumber, docDate, citizenshipName, citizenshipCode, isIdentified) |
+| 12 | POST | http://localhost:8888/user/save | Добавить нового работника |
 
 
 ### Примеры request - response
-#### 1. Получить список организаций
+#### Работа с организациями
+##### 1. Получить организацию по идентификатору
+> http://localhost:8888/organization/1
+
+method:GET  
+`Out:`
+```
+{
+    "data": {
+        "id": 1,
+        "name": "Ромашка",
+        "fullName": "ООО \"Ромашка\"",
+        "inn": "1111111111",
+        "kpp": "222222222",
+        "address": "Ромашковая, 1",
+        "phone": "111-11-11",
+        "isActive": true
+    }
+}
+```
+
+#### 2. Получить список организаций
 > http://localhost:8888/organization/list
 
 method:POST  
@@ -60,26 +85,6 @@ method:POST
             "isActive": true
         }
     ]
-}
-```
-
-#### 2. Получить организацию по идентификатору
-> http://localhost:8888/organization/1
-
-method:GET  
-`Out:`
-```
-{
-    "data": {
-        "id": 1,
-        "name": "Ромашка",
-        "fullName": "ООО \"Ромашка\"",
-        "inn": "1111111111",
-        "kpp": "222222222",
-        "address": "Ромашковая, 1",
-        "phone": "111-11-11",
-        "isActive": true
-    }
 }
 ```
 
@@ -133,7 +138,7 @@ method:POST
     }
 }
 ```
-
+#### Работа с офисами
 #### 5. Получить офис по идентификатору
 > http://localhost:8888/office/1
 
@@ -225,91 +230,119 @@ method:POST
 }
 ```
 
-### 8. api/office/save
-In:
-{
-  “name”:””,
-  “address”:””,
-  “phone”,””,
-  “isActive”:”true”
-}
+#### Работа с работниками
+#### 9. Получить работника по идентификатору
+> http://localhost:8888/user/1
 
-Out:
+method:GET  
+`Out:`
+```
 {
-    “result”:”success”
+    "data": {
+        "id": 1,
+        "firstName": "Роман",
+        "secondName": "Иванов",
+        "middleName": "Петрович",
+        "position": "Агроном",
+        "phone": "111-01-01",
+        "docName": "Военный билет",
+        "docNumber": "1201 123456",
+        "docDate": "2001-01-13",
+        "citizenshipName": "Российская Федерация",
+        "citizenshipCode": "643",
+        "isIdentified": true
+    }
 }
+```
 
-### 9. api/user/list
-In (фильтр):
-{
-  “officeId”:””, //обязательный параметр
-  “firstName”:””,
-  “lastName”:””,
-  “middleName”:””,
-  “position”,””,
-  “docCode”:””,
-  “citizenshipCode”:””
-}
-Out:
-{
-  “id”:””,
-  “firstName”:””,
-  “secondName”:””,
-  “middleName”:””,
-  “position”:””
-}
+#### 10. Получить список работников
+> http://localhost:8888/user/list
 
-### 10. api/user/{id}
-method:GET
-Out:
+method:POST  
+`In:`
+```
 {
-  “id”:””,
-  “firstName”:””,
-  “secondName”:””,
-  “middleName”:””,
-  “position”:””
-  “phone”,””,
-  “docName”:””,
-  “docNumber”:””,
-  “docDate”:””,
-  “citizenshipName”:””,
-  “citizenshipCode”:””,
-  “isIdentified”:”true”
+    "officeId": 1 // обязательный параметр
 }
+```
+`Out:`
+```
+{
+    "data": [
+        {
+            "id": 1,
+            "firstName": "Роман",
+            "secondName": "Иванов",
+            "middleName": "Петрович",
+            "position": "Агроном"
+        },
+        {
+            "id": 2,
+            "firstName": "Иван",
+            "secondName": "Петров",
+            "middleName": "Романович",
+            "position": "Тракторист"
+        }
+    ]
+}
+```
 
-### 11. api/user/update
-In:
-{
-  “id”:””, //обязательный параметр
-  “firstName”:””, //обязательный параметр
-  “secondName”:””,
-  “middleName”:””,
-  “position”:”” //обязательный параметр
-  “phone”,””,
-  “docName”:””,
-  “docNumber”:””,
-  “docDate”:””,
-  “citizenshipCode”:””,
-  “isIdentified”:”true” //пример
-}
+### 11. Обновить атрибуты работника
+>http://localhost:8888/user/update
 
-Out:
+method:POST  
+`In:`
+```
 {
-    “result”:”success”
+    "id": 1, //обязательный параметр
+    "firstName": "new name", //обязательный параметр
+    "secondName": "new second name",
+    "middleName": "new middle name",
+    "position": "new position", //обязательный параметр
+    "phone": "new phone",
+    "docName": "Паспорт",
+    "docNumber": "new doc number",
+    "docDate": "2021-01-02",
+    "citizenshipCode": "643",
+    "isIdentified": true
 }
+```
+`Out:`
+```
+{
+    "data": {
+        "result": "success"
+    }
+}
+```
 
-### 12. api/user/save
-In:
+### 12. Добавить нового работника
+>http://localhost:8888/user/save
+
+method:POST  
+`In:`
+```
 {
-  “firstName”:””, //обязательный параметр
-  “secondName”:””,
-  “middleName”:””,
-  “position”:”” //обязательный параметр
-  “phone”,””,
-  “docCode”:””,
-  “docName”:””,
-  “docNumber”:””,
-  “docDate”:””,
-  “citizenshipCode”:””,
-  “isIdentified”:”true” //пример
+    "firstName": "user first name", //обязательный параметр
+    "secondName": "user second name",
+    "middleName": "user middle name",
+    "position": "user position", //обязательный параметр
+    "phone": "user phone",
+    "officeId": "2", //обязательный параметр
+    "docName": "Паспорт", //обязательный параметр при добавлении работника с документом
+    "docCode": "21", //обязательный параметр при добавлении работника с документом
+    "docNumber": "123456", //обязательный параметр при добавлении работника с документом
+    "docDate": "2021-01-02", //обязательный параметр при добавлении работника с документом
+    "citizenshipCode": "643",
+    "isIdentified": true
 }
+```
+`Out:`
+```
+{
+    "data": {
+        "result": "success"
+    }
+}
+```
+
