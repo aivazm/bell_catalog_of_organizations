@@ -15,13 +15,12 @@ import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-/**
- * Контроллер Organization. Принимает запросы и передает в Сервис
- * Возвращает View-объекты
- */
+/** Контроллер запросов для работы с организациями */
 @RestController
 @RequestMapping(value = "/organization", produces = APPLICATION_JSON_VALUE)
 public class OrganizationController {
+
+    /** Сервис для работы с организациями */
     private final OrganizationService organizationService;
 
     @Autowired
@@ -30,10 +29,10 @@ public class OrganizationController {
     }
 
     /**
-     * ПОлучить организацию по id
+     * Получить организацию по id
      *
-     * @param id PathVariable. id организации
-     * @return Объект OrganizationView (id, name, fullName, inn, kpp, address, phone, isActive) - результат работы метода organizationService.getOrganizationById(id);
+     * @param id идентификатор организации
+     * @return объект-представление организации
      * @see OrganizationService#getOrganizationById(Long id)
      */
     @GetMapping("{id}")
@@ -42,10 +41,10 @@ public class OrganizationController {
     }
 
     /**
-     * Добавить организацию
+     * Добавить новую организацию
      *
-     * @param organizationView JSON-объект с обязательными параметрами name, fullName, inn, kpp, address
-     * @return Объект OrganizationView (result: "success") - результат работы метода organizationService.saveOrganization(organizationView);
+     * @param organizationView объект-представление организации с обязательными параметрами name, fullName, inn, kpp, address
+     * @return сообщение об успешном результате операции
      * @see OrganizationService#saveOrganization(OrganizationView organizationRq);
      */
     @PostMapping("/save")
@@ -56,8 +55,8 @@ public class OrganizationController {
     /**
      * Обновить поля существующей организации
      *
-     * @param organizationView JSON-объект с обязательными параметрами id, name, fullName, inn, kpp, address
-     * @return Объект OrganizationView (result: "success") - результат работы метода organizationService.updateOrganization(organizationView);
+     * @param organizationView объект-представление организации с обязательными параметрами id, name, fullName, inn, kpp, address
+     * @return сообщение об успешном результате операции
      * @see OrganizationService#updateOrganization(OrganizationView organizationRq);
      */
     @PostMapping("/update")
@@ -66,10 +65,10 @@ public class OrganizationController {
     }
 
     /**
-     * Получить List организаций, соответствующих параметрам
+     * Получить список организаций, отфильтрованный по параметрам
      *
-     * @param organizationView JSON-объект с обязательным параметром name
-     * @return List объектов OrganizationView (id, name, isActive) - результат работы метода organizationService.getOrganizationList(organizationView);
+     * @param organizationView объект-представление организации с обязательным параметром name
+     * @return список объектов-представлений организации
      */
     @PostMapping("/list")
     public List<OrganizationView> getListOrganizations(@RequestBody OrganizationView organizationView) {
