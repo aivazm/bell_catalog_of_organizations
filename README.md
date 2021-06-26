@@ -31,7 +31,10 @@ mvn spring-boot:run
 | 2 | GET | http://localhost:8888/organization/{id} | Получить организацию по идентификатору |
 | 3 | POST | http://localhost:8888/organization/update | Обновить атрибуты организации (name, fullName, inn, kpp, address, phone, isActive) |
 | 4 | POST | http://localhost:8888/organization/save | Добавить новую организацию |
-
+| 5 | GET | http://localhost:8888/office/{id} | Получить офис по идентификатору |
+| 6 | POST | http://localhost:8888/office/list | Получить список офисов по идентификатору организации (фильтр по id, name, isActive) |
+| 7 | POST | http://localhost:8888/office/update | Обновить атрибуты офиса (name, address, phone, isActive) |
+| 8 | POST | http://localhost:8888/office/save | Добавить новый офис |
 
 
 ### Примеры request - response
@@ -131,51 +134,96 @@ method:POST
 }
 ```
 
+#### 5. Получить офис по идентификатору
+> http://localhost:8888/office/1
 
-### 5. api/office/list/{orgId}
-In (фильтр):
+method:GET  
+`Out:`
+```
 {
-  “orgId”:””, //обязательный параметр
-  “name”:””,
-  “phone”:””,
-  “isActive” 
+    "data": {
+        "id": 1,
+        "name": "На Ромашковой",
+        "address": "Ромашковая, 1",
+        "phone": "111-11-01",
+        "isActive": true
+    }
 }
+```
 
-Out:
-[
-  {
-    “id”:””,
-    “name”:””,
-    “isActive”:”true”
-  },
-  ...
-]
+#### 6. Получить список офисов
+> http://localhost:8888/office/list
 
-### 6. api/office/{id}
-method:GET
-Out:
+method:POST  
+`In:`
+```
 {
-  “id”:””,
-  “name”:””,
-  “address”:””,
-  “phone”,””,
-  “isActive”:”true”
+    "orgId": 1 // обязательный параметр
 }
-
-### 7. api/office/update
-In:
+```
+`Out:`
+```
 {
-  “id”:””, //обязательный параметр
-  “name”:””, //обязательный параметр
-  “address”:””, //обязательный параметр
-  “phone”,””,
-  “isActive”:”true” //пример
+    "data": [
+        {
+            "id": 1,
+            "name": "На Ромашковой",
+            "isActive": true
+        },
+        {
+            "id": 2,
+            "name": "На Луговой",
+            "isActive": true
+        }
+    ]
 }
+```
 
-Out:
+### 7. Обновить атрибуты офиса
+>http://localhost:8888/office/update
+
+method:POST  
+`In:`
+```
 {
-    “result”:”success”
+    "id": 1, // обязательный параметр
+    "name": "new name", // обязательный параметр
+    "address": "new address", // обязательный параметр
+    "phone": "new phone",
+    "isActive": true
 }
+```
+`Out:`
+```
+{
+    "data": {
+        "result": "success"
+    }
+}
+```
+
+### 8. Добавить новый офис
+>http://localhost:8888/office/save
+
+method:POST  
+`In:`
+```
+{
+    "orgId": 1,
+    "name": "office name",
+    "address": "office address",
+    "phone": "office phone",
+    "isActive": true
+}
+```
+`Out:`
+```
+{
+    "data": {
+        "result": "success"
+    }
+}
+```
 
 ### 8. api/office/save
 In:
