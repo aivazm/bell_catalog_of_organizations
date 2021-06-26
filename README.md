@@ -55,7 +55,7 @@ method:GET
 }
 ```
 
-#### 2. Получить список организаций
+##### 2. Получить список организаций
 > http://localhost:8888/organization/list
 
 method:POST  
@@ -80,7 +80,7 @@ method:POST
 }
 ```
 
-### 3. Обновить атрибуты организации
+##### 3. Обновить атрибуты организации
 >http://localhost:8888/organization/update
 
 method:POST  
@@ -106,7 +106,7 @@ method:POST
 }
 ```
 
-### 4. Добавить новую организацию
+##### 4. Добавить новую организацию
 >http://localhost:8888/organization/save
 
 method:POST  
@@ -131,7 +131,7 @@ method:POST
 }
 ```
 #### Работа с офисами
-#### 5. Получить офис по идентификатору
+##### 5. Получить офис по идентификатору
 > http://localhost:8888/office/1
 
 method:GET  
@@ -148,7 +148,7 @@ method:GET
 }
 ```
 
-#### 6. Получить список офисов
+##### 6. Получить список офисов
 > http://localhost:8888/office/list
 
 method:POST  
@@ -176,7 +176,7 @@ method:POST
 }
 ```
 
-### 7. Обновить атрибуты офиса
+##### 7. Обновить атрибуты офиса
 >http://localhost:8888/office/update
 
 method:POST  
@@ -199,7 +199,7 @@ method:POST
 }
 ```
 
-### 8. Добавить новый офис
+##### 8. Добавить новый офис
 >http://localhost:8888/office/save
 
 method:POST  
@@ -223,7 +223,7 @@ method:POST
 ```
 
 #### Работа с работниками
-#### 9. Получить работника по идентификатору
+##### 9. Получить работника по идентификатору
 > http://localhost:8888/user/1
 
 method:GET  
@@ -247,7 +247,7 @@ method:GET
 }
 ```
 
-#### 10. Получить список работников
+##### 10. Получить список работников
 > http://localhost:8888/user/list
 
 method:POST  
@@ -279,7 +279,7 @@ method:POST
 }
 ```
 
-### 11. Обновить атрибуты работника
+##### 11. Обновить атрибуты работника
 >http://localhost:8888/user/update
 
 method:POST  
@@ -308,7 +308,7 @@ method:POST
 }
 ```
 
-### 12. Добавить нового работника
+##### 12. Добавить нового работника
 >http://localhost:8888/user/save
 
 method:POST  
