@@ -98,17 +98,22 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     private Organization getValidOrganization(OrganizationView organizationView) {
-        Set<ConstraintViolation<OrganizationView>> validate = validator.validate(organizationView);
+        validateView(organizationView);
+        return Organization.builder()
+                .name(organizationView.getName())
+                .fullName(organizationView.getFullName())
+                .inn(organizationView.getInn())
+                .kpp(organizationView.getKpp())
+                .address(organizationView.getAddress())
+                .phone(organizationView.getPhone())
+                .isActive(organizationView.getIsActive())
+                .build();
+    }
+
+    private void validateView(OrganizationView view) {
+        Set<ConstraintViolation<OrganizationView>> validate = validator.validate(view);
         if (validate.isEmpty()) {
-            return Organization.builder()
-                    .name(organizationView.getName())
-                    .fullName(organizationView.getFullName())
-                    .inn(organizationView.getInn())
-                    .kpp(organizationView.getKpp())
-                    .address(organizationView.getAddress())
-                    .phone(organizationView.getPhone())
-                    .isActive(organizationView.getIsActive())
-                    .build();
+            return;
         }
         StringBuilder message = new StringBuilder();
         for (ConstraintViolation<OrganizationView> violation : validate) {
@@ -116,6 +121,5 @@ public class OrganizationServiceImpl implements OrganizationService {
             message.append("; ");
         }
         throw new EmptyFieldException(message.toString().trim());
-
     }
 }
