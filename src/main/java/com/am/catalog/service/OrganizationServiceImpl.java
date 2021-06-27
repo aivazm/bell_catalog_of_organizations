@@ -12,13 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * {@inheritDoc}
+ * Сервис для обработки запросов работы с организациями.
+ * Принимает объекты-отображения OrganizationView, обрабатывает и передает в слой DA.
  */
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
@@ -32,9 +32,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         this.validator = validator;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** Добавить новую организацию */
     @Override
     @Transactional
     public SuccessResponse saveOrganization(OrganizationView organizationView) {
@@ -43,9 +41,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         return new SuccessResponse();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** Обновить данные о существующей организации */
     @Override
     @Transactional
     public SuccessResponse updateOrganization(OrganizationView organizationView) {
@@ -60,9 +56,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** Получить организацию по идентификатору */
     @Override
     public OrganizationView getOrganizationById(Long id) {
         if (id < 1) {
@@ -81,9 +75,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .build();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** Получить отфильтрованный список организаций */
     @Override
     public List<OrganizationView> getOrganizationList(OrganizationView organizationView) {
         if (organizationView.getName() == null || organizationView.getName().isEmpty()) {

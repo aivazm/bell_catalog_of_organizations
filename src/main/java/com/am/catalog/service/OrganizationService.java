@@ -6,24 +6,24 @@ import com.am.catalog.view.SuccessResponse;
 import java.util.List;
 
 /**
- * Сервис класса Organization. Принимает данные из OrganizationController,
- * проверяет и передает в OrganizationDao
+ * Сервис для обработки запросов работы с организациями.
+ * Принимает объекты-отображения OrganizationView, обрабатывает и передает в слой DA.
  */
 public interface OrganizationService {
 
     /**
-     * Добавить организацию
+     * Добавить новую организацию
      *
      * @param organizationView OrganizationView-объект с обязательными параметрами name, fullName, inn, kpp, address
-     * @return Объект OrganizationView (result: "success");
+     * @return объект с сообщением о успешном завершении операции
      */
     SuccessResponse saveOrganization(OrganizationView organizationView);
 
     /**
      * Обновить поля существующей организации
      *
-     * @param organizationView OrganizationView-объект с обязательными параметрами id, name, fullName, inn, kpp, address
-     * @return Объект OrganizationView (result: "success");
+     * @param organizationView объект-представление с обязательными параметрами id, name, fullName, inn, kpp, address
+     * @return объект с сообщением о успешном завершении операции
      */
     SuccessResponse updateOrganization(OrganizationView organizationView);
 
@@ -31,15 +31,15 @@ public interface OrganizationService {
      * Получить организацию по id
      *
      * @param id id организации
-     * @return Объект OrganizationView (id, name, fullName, inn, kpp, address, phone, isActive);
+     * @return представление OrganizationView
      */
     OrganizationView getOrganizationById(Long id);
 
     /**
-     * Получить List организаций, соответствующих параметрам
+     * Получить список организаций, отфильтрованных по параметрам
      *
      * @param organizationView OrganizationView-объект с обязательным параметром name
-     * @return List объектов OrganizationView (id, name, isActive);
+     * @return список представлений OrganizationView (id, name, isActive);
      */
 
     List<OrganizationView> getOrganizationList(OrganizationView organizationView);
