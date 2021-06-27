@@ -2,6 +2,7 @@ package com.am.catalog.service;
 
 import com.am.catalog.dao.OrganizationDao;
 import com.am.catalog.exception.EmptyFieldException;
+import com.am.catalog.exception.ErrorMessage;
 import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.model.Organization;
 import com.am.catalog.view.OrganizationView;
@@ -46,7 +47,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     public SuccessResponse updateOrganization(OrganizationView organizationView) {
         if (organizationView.getId() == null) {
-            throw new EmptyFieldException("id cannot be empty;");
+            throw new EmptyFieldException(ErrorMessage.EMPTY_ID);
         }
         Organization organization = getValidOrganization(organizationView);
         if (dao.updateOrganization(organization, organizationView.getId()) > 0) {
@@ -60,7 +61,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public OrganizationView getOrganizationById(Long id) {
         if (id < 1) {
-            throw new EmptyFieldException("Id cannot be empty or less than one");
+            throw new EmptyFieldException(ErrorMessage.INVALID_ID);
         }
         Organization org = dao.getOrganizationById(id);
         return OrganizationView.builder()

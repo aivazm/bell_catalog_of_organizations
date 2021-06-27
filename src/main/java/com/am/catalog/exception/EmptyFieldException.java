@@ -7,7 +7,7 @@ public class EmptyFieldException extends RuntimeException {
 
     /**
      * Конструктор исключения
-     * @param message
+     * @param message сообщение об ошибке
      */
     public EmptyFieldException(String message) {
         super(message);
