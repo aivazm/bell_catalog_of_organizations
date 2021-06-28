@@ -18,7 +18,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class OfficeView {
+public class OfficeView implements View {
     /**
      * Идентификатор
      */

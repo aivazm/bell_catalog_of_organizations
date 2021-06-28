@@ -6,16 +6,14 @@ import com.am.catalog.exception.EmptyFieldException;
 import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.model.Office;
 import com.am.catalog.model.Organization;
+import com.am.catalog.util.ValidationService;
 import com.am.catalog.view.OfficeView;
 import com.am.catalog.view.SuccessResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -23,15 +21,16 @@ import java.util.stream.Collectors;
  */
 @Service
 public class OfficeServiceImpl implements OfficeService {
+    /** сервис для работы с базой данных */
     private final OfficeDao officeDao;
     private final OrganizationDao organizationDao;
-    private final Validator validator;
+    private final ValidationService validationService;
 
     @Autowired
-    public OfficeServiceImpl(OfficeDao officeDao, OrganizationDao organizationDao, Validator validator) {
+    public OfficeServiceImpl(OfficeDao officeDao, OrganizationDao organizationDao, ValidationService validationService) {
         this.officeDao = officeDao;
         this.organizationDao = organizationDao;
-        this.validator = validator;
+        this.validationService = validationService;
     }
 
     /**
@@ -40,20 +39,9 @@ public class OfficeServiceImpl implements OfficeService {
     @Override
     @Transactional
     public SuccessResponse saveOffice(OfficeView officeView) {
-        StringBuilder message = new StringBuilder();
+        validationService.validate(officeView);
         if (officeView.getOrgId() == null) {
-            message.append("OrgId cannot be empty; ");
-        }
-
-        Set<ConstraintViolation<OfficeView>> validate = validator.validate(officeView);
-        if (!validate.isEmpty()) {
-            for (ConstraintViolation<OfficeView> violation : validate) {
-                message.append(violation.getMessage());
-                message.append("; ");
-            }
-        }
-        if (message.length() > 0) {
-            throw new EmptyFieldException(message.toString().trim());
+            throw new EmptyFieldException("OrgId cannot be empty; ");
         }
         Office office = new Office();
         office.setName(officeView.getName());
@@ -82,19 +70,9 @@ public class OfficeServiceImpl implements OfficeService {
     @Override
     @Transactional
     public SuccessResponse updateOffice(OfficeView officeView) {
-        StringBuilder message = new StringBuilder();
+        validationService.validate(officeView);
         if (officeView.getId() == null) {
-            message.append("id cannot be empty; ");
-        }
-        Set<ConstraintViolation<OfficeView>> validate = validator.validate(officeView);
-        if (!validate.isEmpty()) {
-            for (ConstraintViolation<OfficeView> violation : validate) {
-                message.append(violation.getMessage());
-                message.append("; ");
-            }
-        }
-        if (message.length() > 0) {
-            throw new EmptyFieldException(message.toString().trim());
+            throw new EmptyFieldException("id cannot be empty; ");
         }
         Office office = new Office();
         office.setName(officeView.getName());

@@ -5,16 +5,15 @@ import com.am.catalog.exception.EmptyFieldException;
 import com.am.catalog.exception.ErrorMessage;
 import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.model.Organization;
+import com.am.catalog.util.ValidationService;
 import com.am.catalog.view.OrganizationView;
 import com.am.catalog.view.SuccessResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -24,13 +23,14 @@ import java.util.stream.Collectors;
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
 
+    /** сервис для работы с базой данных */
     private final OrganizationDao dao;
-    private final Validator validator;
+    private final ValidationService validationService;
 
     @Autowired
-    public OrganizationServiceImpl(OrganizationDao dao, Validator validator) {
+    public OrganizationServiceImpl(OrganizationDao dao, ValidationService validationService) {
         this.dao = dao;
-        this.validator = validator;
+        this.validationService = validationService;
     }
 
     /** Добавить новую организацию */
@@ -79,7 +79,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     /** Получить отфильтрованный список организаций */
     @Override
     public List<OrganizationView> getOrganizationList(OrganizationView organizationView) {
-        if (organizationView.getName() == null || organizationView.getName().isEmpty()) {
+        if (StringUtils.isBlank(organizationView.getName())) {
             throw new EmptyFieldException("Name cannot be empty");
         }
         List<Organization> organizations = dao.getOrganizationList(organizationView.getName(),
@@ -92,13 +92,13 @@ public class OrganizationServiceImpl implements OrganizationService {
                                             .name(o.getName())
                                             .isActive(o.getIsActive())
                                             .build())
-                                      .collect(Collectors.toList()));
+                                            .collect(Collectors.toList()));
 
 
     }
 
     private Organization getValidOrganization(OrganizationView organizationView) {
-        validateView(organizationView);
+        validationService.validate(organizationView);
         return Organization.builder()
                 .name(organizationView.getName())
                 .fullName(organizationView.getFullName())
@@ -110,16 +110,4 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .build();
     }
 
-    private void validateView(OrganizationView view) {
-        Set<ConstraintViolation<OrganizationView>> validate = validator.validate(view);
-        if (validate.isEmpty()) {
-            return;
-        }
-        StringBuilder message = new StringBuilder();
-        for (ConstraintViolation<OrganizationView> violation : validate) {
-            message.append(violation.getMessage());
-            message.append("; ");
-        }
-        throw new EmptyFieldException(message.toString().trim());
-    }
 }

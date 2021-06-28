@@ -9,18 +9,16 @@ import com.am.catalog.model.DocType;
 import com.am.catalog.model.Document;
 import com.am.catalog.model.Office;
 import com.am.catalog.model.User;
+import com.am.catalog.util.ValidationService;
 import com.am.catalog.view.SuccessResponse;
 import com.am.catalog.view.UserView;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -30,15 +28,16 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private StringBuilder message;
+    /** сервис для работы с базой данных */
     private final UserDao userDao;
     private final OfficeDao officeDao;
-    private final Validator validator;
+    private final ValidationService validationService;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, OfficeDao officeDao, Validator validator) {
+    public UserServiceImpl(UserDao userDao, OfficeDao officeDao, ValidationService validationService) {
         this.userDao = userDao;
         this.officeDao = officeDao;
-        this.validator = validator;
+        this.validationService = validationService;
     }
 
     /**
@@ -47,44 +46,35 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public SuccessResponse saveUser(UserView userView) {
-        message = new StringBuilder();
         User user = getCrudeUser(userView);
-        if (userView.getOfficeId() != null) {
-            Office office = officeDao.getOfficeById(userView.getOfficeId());
-            if (office != null) {
-                user.setOffice(office);
-            } else {
-                message.append("Офис с указанным id отсутствует");
-            }
-        } else {
-            message.append("Поле officeId не может быть пустым");
+        if (userView.getOfficeId() == null) {
+            throw new EmptyFieldException("Поле officeId не может быть пустым");
         }
+        Office office = officeDao.getOfficeById(userView.getOfficeId());
+        if (office == null) {
+            throw new NoObjectException("Офис с указанным id отсутствует");
+        }
+        user.setOffice(office);
         String code = userView.getDocCode();
         String name = userView.getDocName();
         String number = userView.getDocNumber();
         Date date = userView.getDocDate();
         if (code != null || name != null || number != null || date != null) {
-            if (code == null || code.isEmpty() || name == null || name.isEmpty() ||
-                    number == null || number.isEmpty() || date == null
-            ) {
-                message.append("При добавлении работника c документом поля DocCode, DocName, DocNumber, DocDate обязательны к заполнению; ");
+            if (StringUtils.isBlank(code) || StringUtils.isBlank(name)|| StringUtils.isBlank(number) || date == null) {
+                throw new EmptyFieldException("При добавлении работника c документом поля DocCode, DocName, DocNumber, DocDate обязательны к заполнению; ");
             } else {
                 DocType docType = new DocType(code, name);
                 Document document = new Document(docType, number, date);
                 user.setDocument(document);
             }
         }
-        if (userView.getIsIdentified() != null) {
-            user.setIsIdentified(userView.getIsIdentified());
-        } else {
+        if (userView.getIsIdentified() == null) {
             user.setIsIdentified(false);
-        }
-        if (message.length() == 0) {
-            userDao.saveUser(user);
-            return new SuccessResponse();
         } else {
-            throw new EmptyFieldException(message.toString().trim());
+            user.setIsIdentified(userView.getIsIdentified());
         }
+        userDao.saveUser(user);
+        return new SuccessResponse();
     }
 
     /**
@@ -93,18 +83,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public SuccessResponse updateUser(UserView userView) {
-        message = new StringBuilder();
         User user = getCrudeUser(userView);
         if (userView.getId() == null) {
-            message.append("Поле id не может быт пустым; ");
+            throw new EmptyFieldException("Поле id не может быт пустым; ");
         }
         if (userView.getOfficeId() != null) {
             Office office = officeDao.getOfficeById(userView.getOfficeId());
-            if (office != null) {
-                user.setOffice(office);
-            } else {
-                message.append("Офис с указанным id отсутствует");
+            if (office == null) {
+                throw new NoObjectException("Офис с указанным id отсутствует");
             }
+            user.setOffice(office);
         }
         if (userView.getIsIdentified() != null) {
             user.setIsIdentified(userView.getIsIdentified());
@@ -113,8 +101,8 @@ public class UserServiceImpl implements UserService {
         String number = userView.getDocNumber();
         Date date = userView.getDocDate();
         if (name != null || number != null || date != null) {
-            if (name == null || name.isEmpty() || number == null || number.isEmpty() || date == null) {
-                message.append("При обновлении документа работника поля DocName, DocNumber, DocDate обязательны к заполнению; ");
+            if (StringUtils.isBlank(name) || StringUtils.isBlank(number) || date == null) {
+                throw new EmptyFieldException("При обновлении документа работника поля DocName, DocNumber, DocDate обязательны к заполнению; ");
             } else {
                 DocType docType = new DocType();
                 docType.setName(name);
@@ -125,15 +113,11 @@ public class UserServiceImpl implements UserService {
         if (userView.getIsIdentified() != null) {
             user.setIsIdentified(userView.getIsIdentified());
         }
-        if (message.length() == 0) {
-            Long id = userView.getId();
-            if (userDao.updateUser(user, id) > 0) {
-                return new SuccessResponse();
-            } else {
-                throw new NoObjectException("Обновление не удалось");
-            }
+        Long id = userView.getId();
+        if (userDao.updateUser(user, id) > 0) {
+            return new SuccessResponse();
         } else {
-            throw new EmptyFieldException(message.toString().trim());
+            throw new NoObjectException("Обновление работника не удалось");
         }
     }
 
@@ -205,13 +189,7 @@ public class UserServiceImpl implements UserService {
 
 
     private User getCrudeUser(UserView userView) {
-        Set<ConstraintViolation<UserView>> validate = validator.validate(userView);
-        if (!validate.isEmpty()) {
-            for (ConstraintViolation<UserView> violation : validate) {
-                message.append(violation.getMessage());
-                message.append("; ");
-            }
-        }
+        validationService.validate(userView);
         User user = new User();
         user.setFirstName(userView.getFirstName());
         user.setPosition(userView.getPosition());
