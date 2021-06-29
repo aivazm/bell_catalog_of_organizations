@@ -3,6 +3,7 @@ package com.am.catalog.service;
 import com.am.catalog.dao.OfficeDao;
 import com.am.catalog.dao.UserDao;
 import com.am.catalog.exception.EmptyFieldException;
+import com.am.catalog.exception.ErrorMessage;
 import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.model.Country;
 import com.am.catalog.model.DocType;
@@ -27,7 +28,6 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private StringBuilder message;
     /** сервис для работы с базой данных */
     private final UserDao userDao;
     private final OfficeDao officeDao;
@@ -46,13 +46,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public SuccessResponse saveUser(UserView userView) {
+        validateOfficeId(userView.getOfficeId());
         User user = getCrudeUser(userView);
-        if (userView.getOfficeId() == null) {
-            throw new EmptyFieldException("Поле officeId не может быть пустым");
-        }
         Office office = officeDao.getOfficeById(userView.getOfficeId());
         if (office == null) {
-            throw new NoObjectException("Офис с указанным id отсутствует");
+            throw new NoObjectException(ErrorMessage.NO_OFFICE);
         }
         user.setOffice(office);
         String code = userView.getDocCode();
@@ -61,7 +59,7 @@ public class UserServiceImpl implements UserService {
         Date date = userView.getDocDate();
         if (code != null || name != null || number != null || date != null) {
             if (StringUtils.isBlank(code) || StringUtils.isBlank(name)|| StringUtils.isBlank(number) || date == null) {
-                throw new EmptyFieldException("При добавлении работника c документом поля DocCode, DocName, DocNumber, DocDate обязательны к заполнению; ");
+                throw new EmptyFieldException(ErrorMessage.EMPTY_DOC_FIELDS_WHEN_SAVE_USER);
             } else {
                 DocType docType = new DocType(code, name);
                 Document document = new Document(docType, number, date);
@@ -83,14 +81,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public SuccessResponse updateUser(UserView userView) {
-        User user = getCrudeUser(userView);
         if (userView.getId() == null) {
-            throw new EmptyFieldException("Поле id не может быт пустым; ");
+            throw new EmptyFieldException(ErrorMessage.EMPTY_ID_FIELD);
         }
+        User user = getCrudeUser(userView);
         if (userView.getOfficeId() != null) {
             Office office = officeDao.getOfficeById(userView.getOfficeId());
             if (office == null) {
-                throw new NoObjectException("Офис с указанным id отсутствует");
+                throw new NoObjectException(ErrorMessage.NO_OFFICE);
             }
             user.setOffice(office);
         }
@@ -102,7 +100,7 @@ public class UserServiceImpl implements UserService {
         Date date = userView.getDocDate();
         if (name != null || number != null || date != null) {
             if (StringUtils.isBlank(name) || StringUtils.isBlank(number) || date == null) {
-                throw new EmptyFieldException("При обновлении документа работника поля DocName, DocNumber, DocDate обязательны к заполнению; ");
+                throw new EmptyFieldException(ErrorMessage.EMPTY_DOC_FIELDS_WHEN_UPDATE_USER);
             } else {
                 DocType docType = new DocType();
                 docType.setName(name);
@@ -117,7 +115,7 @@ public class UserServiceImpl implements UserService {
         if (userDao.updateUser(user, id) > 0) {
             return new SuccessResponse();
         } else {
-            throw new NoObjectException("Обновление работника не удалось");
+            throw new NoObjectException(ErrorMessage.UPDATE_FAILED);
         }
     }
 
@@ -127,7 +125,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserView getUserById(Long id) {
         if (id < 1) {
-            throw new EmptyFieldException("Id cannot be empty or less than one");
+            throw new EmptyFieldException(String.format(ErrorMessage.INVALID_ID_FIELD, id));
         }
         User user = userDao.getUserById(id);
         String docName = null;
@@ -165,9 +163,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<UserView> getUserList(UserView userView) {
-        if (userView.getOfficeId() == null || userView.getOfficeId() < 1) {
-            throw new EmptyFieldException("Параметр officeId обязателен к заполнению и не может быть меньше единицы");
-        }
+        validateOfficeId(userView.getOfficeId());
         List<User> userList = userDao.getUserList(userView.getOfficeId(),
                 userView.getFirstName(),
                 userView.getSecondName(),
@@ -206,6 +202,15 @@ public class UserServiceImpl implements UserService {
             user.setCountry(new Country(userView.getCitizenshipCode()));
         }
         return user;
+    }
+
+    private void validateOfficeId(Long officeId) {
+        if (officeId == null) {
+            throw new EmptyFieldException(ErrorMessage.EMPTY_OFFICE_ID_FIELD);
+        }
+        if (officeId < 1) {
+            throw new EmptyFieldException(String.format(ErrorMessage.INVALID_OFFICE_ID_FIELD, officeId));
+        }
     }
 
 }

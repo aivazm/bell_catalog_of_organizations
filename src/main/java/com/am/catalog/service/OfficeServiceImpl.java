@@ -3,6 +3,7 @@ package com.am.catalog.service;
 import com.am.catalog.dao.OfficeDao;
 import com.am.catalog.dao.OrganizationDao;
 import com.am.catalog.exception.EmptyFieldException;
+import com.am.catalog.exception.ErrorMessage;
 import com.am.catalog.exception.NoObjectException;
 import com.am.catalog.model.Office;
 import com.am.catalog.model.Organization;
@@ -39,16 +40,13 @@ public class OfficeServiceImpl implements OfficeService {
     @Override
     @Transactional
     public SuccessResponse saveOffice(OfficeView officeView) {
-        validationService.validate(officeView);
         if (officeView.getOrgId() == null) {
-            throw new EmptyFieldException("OrgId cannot be empty; ");
+            throw new EmptyFieldException(ErrorMessage.EMPTY_ORG_ID_FIELD);
         }
-        Office office = new Office();
-        office.setName(officeView.getName());
-        office.setAddress(officeView.getAddress());
+        Office office = getValidOffice(officeView);
         Organization o = organizationDao.getOrganizationById(officeView.getOrgId());
         if (o == null) {
-            throw new NoObjectException("Нет организации с id: " + officeView.getOrgId());
+            throw new NoObjectException(ErrorMessage.NO_ORGANIZATION);
         } else {
             office.setOrganization(o);
         }
@@ -70,17 +68,14 @@ public class OfficeServiceImpl implements OfficeService {
     @Override
     @Transactional
     public SuccessResponse updateOffice(OfficeView officeView) {
-        validationService.validate(officeView);
         if (officeView.getId() == null) {
-            throw new EmptyFieldException("id cannot be empty; ");
+            throw new EmptyFieldException(ErrorMessage.EMPTY_ID_FIELD);
         }
-        Office office = new Office();
-        office.setName(officeView.getName());
-        office.setAddress(officeView.getAddress());
+        Office office = getValidOffice(officeView);
         if (officeView.getOrgId() != null) {
             Organization o = organizationDao.getOrganizationById(officeView.getOrgId());
             if (o == null) {
-                throw new NoObjectException("Нет организации с id: " + officeView.getOrgId());
+                throw new NoObjectException(ErrorMessage.NO_ORGANIZATION);
             } else {
                 office.setOrganization(o);
             }
@@ -94,7 +89,7 @@ public class OfficeServiceImpl implements OfficeService {
         if (officeDao.updateOffice(office, officeView.getId()) > 0) {
             return new SuccessResponse();
         } else {
-            throw new NoObjectException("Обновление офиса не удалось");
+            throw new NoObjectException(ErrorMessage.UPDATE_FAILED);
         }
     }
 
@@ -104,7 +99,7 @@ public class OfficeServiceImpl implements OfficeService {
     @Override
     public OfficeView getOfficeById(Long id) {
         if (id < 1) {
-            throw new EmptyFieldException("Id cannot be empty or less than one");
+            throw new EmptyFieldException(String.format(ErrorMessage.INVALID_ID_FIELD, id));
         }
         Office office = officeDao.getOfficeById(id);
         return OfficeView.builder()
@@ -121,9 +116,7 @@ public class OfficeServiceImpl implements OfficeService {
      */
     @Override
     public List<OfficeView> getOfficeList(OfficeView officeView) {
-        if (officeView.getOrgId() == null || officeView.getOrgId() < 1) {
-            throw new EmptyFieldException("OrgId cannot be empty or less than one");
-        }
+        validateOrgId(officeView.getOrgId());
         Organization org = organizationDao.getOrganizationById(officeView.getOrgId());
         if (org != null) {
             List<Office> offices = officeDao.getOfficeList(org,
@@ -131,7 +124,6 @@ public class OfficeServiceImpl implements OfficeService {
                     officeView.getPhone(),
                     officeView.getIsActive()
             );
-
             return (offices.stream().map(o -> OfficeView.builder()
                     .id(o.getId())
                     .name(o.getName())
@@ -139,7 +131,24 @@ public class OfficeServiceImpl implements OfficeService {
                     .build()).collect(Collectors.toList()));
 
         } else {
-            throw new NoObjectException("Нет организации с id: " + officeView.getOrgId());
+            throw new NoObjectException(ErrorMessage.NO_ORGANIZATION);
+        }
+    }
+
+    private Office getValidOffice(OfficeView officeView) {
+        validationService.validate(officeView);
+        Office office = new Office();
+        office.setName(officeView.getName());
+        office.setAddress(officeView.getAddress());
+        return office;
+    }
+
+    private void validateOrgId(Long orgId) {
+        if (orgId == null) {
+            throw new EmptyFieldException(ErrorMessage.EMPTY_ORG_ID_FIELD);
+        }
+        if (orgId < 1) {
+            throw new EmptyFieldException(String.format(ErrorMessage.INVALID_ORG_ID_FIELD, orgId));
         }
     }
 }

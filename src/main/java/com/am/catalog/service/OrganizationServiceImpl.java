@@ -47,13 +47,13 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     public SuccessResponse updateOrganization(OrganizationView organizationView) {
         if (organizationView.getId() == null) {
-            throw new EmptyFieldException(ErrorMessage.EMPTY_ID);
+            throw new EmptyFieldException(ErrorMessage.EMPTY_ID_FIELD);
         }
         Organization organization = getValidOrganization(organizationView);
         if (dao.updateOrganization(organization, organizationView.getId()) > 0) {
             return new SuccessResponse();
         } else {
-            throw new NoObjectException("Обновление не удалось");
+            throw new NoObjectException(ErrorMessage.UPDATE_FAILED);
         }
     }
 
@@ -61,7 +61,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public OrganizationView getOrganizationById(Long id) {
         if (id < 1) {
-            throw new EmptyFieldException(ErrorMessage.INVALID_ID);
+            throw new EmptyFieldException(String.format(ErrorMessage.INVALID_ID_FIELD, id));
         }
         Organization org = dao.getOrganizationById(id);
         return OrganizationView.builder()
@@ -80,7 +80,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public List<OrganizationView> getOrganizationList(OrganizationView organizationView) {
         if (StringUtils.isBlank(organizationView.getName())) {
-            throw new EmptyFieldException("Name cannot be empty");
+            throw new EmptyFieldException(ErrorMessage.EMPTY_NAME_FIELD);
         }
         List<Organization> organizations = dao.getOrganizationList(organizationView.getName(),
                 organizationView.getInn(),
